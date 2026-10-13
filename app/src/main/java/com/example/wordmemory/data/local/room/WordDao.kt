@@ -17,6 +17,9 @@ interface WordDao {
     @Query("SELECT * FROM word_items WHERE bundleId = :bundleId")
     suspend fun getItemsByBundle(bundleId: Long): List<WordItemEntity>
 
+    @Query("DELETE FROM word_items WHERE bundleId = :bundleId")
+    suspend fun deleteItemsByBundleId(bundleId: Long)
+
     @Delete
     suspend fun deleteBundle(bundle: WordBundleEntity)
 }

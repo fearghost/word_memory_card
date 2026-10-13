@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Transformable
 import androidx.compose.ui.graphics.graphics
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
@@ -21,33 +20,35 @@ fun FlashcardView(
     var rotated by remember { mutableStateOf(false) }
     val rotation by animateFloatAsState(
         targetValue = if (rotated) 180f else 0f,
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = tween(durationMillis = 600),
         label = "flashcardRotation"
     )
 
     Card(
         modifier = modifier
-            .size(width = 300.dp, height = 200.dp)
+            .size(width = 320.dp, height = 220.dp)
             .graphics(rotation = rotation)
             .clickable { rotated = !rotated },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
     ) {
         Box(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             if (rotation <= 90f) {
-                // Front Side (English)
                 Text(
                     text = word.word,
-                    style = MaterialTheme.typography.headlineLarge
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
             } else {
-                // Back Side (Meaning) - We rotate the text content back so it's readable
                 Text(
                     text = word.meaning,
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.graphics(rotation = 180f)
+                    modifier = Modifier.graphics(rotation = 180f),
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }

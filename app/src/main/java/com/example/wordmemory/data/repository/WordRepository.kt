@@ -20,3 +20,17 @@ class WordRepository(private val wordDao: WordDao) {
         wordDao.insertItems(entities)
     }
 }
+
+
+    suspend fun updateWordsInBundle(bundleId: Long, words: List<ParsedWord>) {
+        wordDao.deleteItemsByBundleId(bundleId)
+        val entities = words.map { 
+            WordItemEntity(bundleId = bundleId, word = it.word, meaning = it.meaning) 
+        }
+        wordDao.insertItems(entities)
+    }
+
+
+    suspend fun deleteBundle(bundle: com.example.wordmemory.data.local.room.WordBundleEntity) {
+        wordDao.deleteBundle(bundle)
+    }

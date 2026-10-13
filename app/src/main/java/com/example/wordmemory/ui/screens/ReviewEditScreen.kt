@@ -12,14 +12,20 @@ import com.example.wordmemory.ui.viewmodel.WordViewModel
 
 @Composable
 fun ReviewEditScreen(
+    bundleId: Long,
     viewModel: WordViewModel,
-    onSave: () -> Unit,
+    onSave: (List<ParsedWord>) -> Unit,
     onCancel: () -> Unit
 ) {
     val parsedWords by viewModel.parsedWords.collectAsState()
     
     // Local state to hold the edited words
     var editableWords by remember { mutableStateOf(parsedWords) }
+
+    // Update local state when parsedWords changes (e.g. when entering screen)
+    LaunchedEffect(parsedWords) {
+        editableWords = parsedWords
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Review & Edit", style = MaterialTheme.typography.headlineMedium)
@@ -54,8 +60,7 @@ fun ReviewEditScreen(
                 Text("Cancel")
             }
             Button(onClick = {
-                // In a real app, you'd update the ViewModel with the new list
-                onSave()
+                onSave(editableWords)
             }, modifier = Modifier.weight(1f)) {
                 Text("Save")
             }
@@ -76,14 +81,16 @@ fun WordEditRow(
                 value = initialWord,
                 onValueChange = onWordChange,
                 label = { Text("Word") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = initialMeaning,
                 onValueChange = onMeaningChange,
                 label = { Text("Meaning") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
         }
     }

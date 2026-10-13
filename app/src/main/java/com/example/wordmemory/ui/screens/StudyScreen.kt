@@ -28,6 +28,7 @@ fun StudyScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("All done!", style = MaterialTheme.typography.headlineLarge)
+            Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onComplete) {
                 Text("Back to Home")
             }
@@ -36,36 +37,42 @@ fun StudyScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Accent Selection Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                listOf(Locale.US, Locale.UK, Locale.forLanguageTag("en-AU")).forEach { locale ->
-                    val label = when(locale.language) {
-                        "en" -> if (locale.country == "US") "US" else if (locale.country == "GB") "UK" else "AU"
-                        else -> locale.country
+            // Header: Progress and Accent Selection
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Card ${currentIndex + 1} of ${words.size}",
+                    style = MaterialTheme.typography.labelLarge
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    listOf(Locale.US, Locale.UK, Locale.forLanguageTag("en-AU")).forEach { locale ->
+                        val label = when(locale.language) {
+                            "en" -> if (locale.country == "US") "US" else if (locale.country == "GB") "UK" else "AU"
+                            else -> locale.country
+                        }
+                        FilterChip(
+                            selected = selectedLocale == locale,
+                            onClick = { 
+                                selectedLocale = locale
+                                ttsManager.setAccent(locale)
+                            },
+                            label = { Text(label) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
-                    FilterChip(
-                        selected = selectedLocale == locale,
-                        onClick = { 
-                            selectedLocale = locale
-                            ttsManager.setAccent(locale)
-                        },
-                        label = { Text(label) }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            // Main Card Area
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 FlashcardView(
                     word = words[currentIndex],
-                    modifier = Modifier.size(width = 300.dp, height = 200.dp)
+                    modifier = Modifier.fillMaxSize()
                 )
                 
                 IconButton(
@@ -76,8 +83,7 @@ fun StudyScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-            
+            // Navigation Footer
             Button(
                 onClick = { currentIndex++ },
                 modifier = Modifier.fillMaxWidth()

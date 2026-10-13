@@ -21,9 +21,13 @@ class WordViewModel(
     private val _isProcessing = MutableStateFlow(false)
     val isProcessing: StateFlow<Boolean> = _isProcessing
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
     fun processImages(uris: List<Uri>) {
         viewModelScope.launch {
             _isProcessing.value = true
+            _errorMessage.value = null
             val allWords = mutableListOf<ParsedWord>()
             
             for (uri in uris) {
@@ -32,7 +36,8 @@ class WordViewModel(
                     val words = textParser.parse(result.rawText)
                     allWords.addAll(words)
                 } catch (e: Exception) {
-                    // In a real app, log the error
+                    _errorMessage.value = "Error processing image: ${e.localizedMessage}"
+                    break
                 }
             }
             
@@ -43,12 +48,20 @@ class WordViewModel(
     
     fun saveWordsToBundle(bundleId: Long, words: List<ParsedWord>, repository: com.example.wordmemory.data.repository.WordRepository) {
         viewModelScope.launch {
-            repository.saveWordsToBundle(bundleId, words)
-            clearWords()
+            try {
+                repository.saveWordsToBundle(bundleId, words)
+                clearWords()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to save bundle: ${e.localizedMessage}"
+            }
         }
     }
 
     fun clearWords() {
         _parsedWords.value = emptyList()
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 }

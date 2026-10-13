@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.wordmemory.ui.screens.ParsingScreen
+import com.example.wordmemory.ui.screens.HomeScreen
 import com.example.wordmemory.ui.screens.ReviewEditScreen
 import com.example.wordmemory.ui.screens.NewBundleScreen
 import com.example.wordmemory.ui.screens.StudyScreen
@@ -23,20 +24,42 @@ fun AppNavigation(
     
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { 
-            Text("Home Dashboard") 
+            HomeScreen(
+                repository = repository,
+                viewModel = viewModel,
+                onNavigateToNewBundle = { navController.navigate("new_bundle") },
+                onNavigateToStudy = { bundleId -> navController.navigate("study/$bundleId") },
+                onNavigateToEdit = { bundleId -> navController.navigate("review_edit/$bundleId") }
+            )
         }
         composable("parsing") { 
             ParsingScreen(viewModel) 
         }
-        composable("review_edit") { 
-            ReviewEditScreen(viewModel, onNavigationUp = { navController.popBackStack() }, onCancel = { navController.popBackStack() }) 
+        composable("review_edit/{bundleId}") { backStackEntry ->
+            val bundleId = backStackEntry.arguments?.getString("bundleId")?.toLong() ?: 0L
+            ReviewEditScreen(
+                bundleId = bundleId,
+                viewModel = viewModel,
+                onSave = { viewModel.saveEditedWords(bundleId, it, repository) },
+                onCancel = { navController.popBackStack() }
+            )
         }
         composable("new_bundle") { 
-            NewBundleScreen(repository, onNavigationUp = { navController.popBackStack() }, onBundleCreated = { navController.popBackStack() }) 
+            NewBundleScreen(
+                repository = repository,
+                onNavigationUp = { navController.popBackStack() }, 
+                onBundleCreated = { navController.popBackStack() }
+            ) 
         }
-        composable("study") {
-            // In a real app, we'd pass the actual words from the ViewModel
-            StudyScreen(words = emptyList(), ttsManager = ttsManager, onComplete = { navController.popBackStack() })
+        composable("study/{bundleId}") { backStackEntry ->
+            val bundleId = backStackEntry.arguments?.getString("bundleId")?.toLong() ?: 0L
+            // In a real app, we'd fetch words from the repository here.
+            // For now, we pass empty list or handle it in the ViewModel.
+            StudyScreen(
+                words = emptyList(), // Placeholder: should be loaded from DB
+                ttsManager = ttsManager, 
+                onComplete = { navController.popBackStack() }
+            )
         }
     }
 }
