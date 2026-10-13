@@ -50,6 +50,5 @@ dependencies {
     
     // ML Kit
     implementation("com.google.mlkit:text-recognition:16.0.0")
-    implementation("com.google.mlkit:text-recognition-latin:16.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }

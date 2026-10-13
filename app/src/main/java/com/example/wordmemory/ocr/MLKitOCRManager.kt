@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognitionOptions
+import com.google.mlkit.vision.text.TextRecognitionOptions
 import kotlinx.coroutines.tasks.await
 
 class MLKitOCRManager(private val context: Context) : OCRManager {

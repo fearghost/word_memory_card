@@ -41,3 +41,9 @@
 ## [2026-10-14 00:39:55]
 - Issue: Compilation failure in GitHub Actions: Unresolved ML Kit references, Type mismatch in FlashcardView, and Unresolved SnackbarHostState in ParsingScreen.
 - Fix: Added ML Kit Latin dependency, fixed type mismatch in FlashcardView using .toFloat(), and added explicit Material3 imports and @OptIn for experimental APIs.
+
+## [2026-10-14] Dependency error: Could not find com.google.mlkit:text-recognition-latin:16.0.0.
+- Fix: Replaced the invalid latin-specific dependency with the base com.google.mlkit:text-recognition dependency and updated imports in MLKitOCRManager.kt.
+
+## [2026-10-14] Compilation errors: Unresolved references and type mismatch in UI and OCR components.
+- Fix: Corrected Material3 imports, added @OptIn for experimental APIs, and fixed a Float/Int type mismatch in FlashcardView.
