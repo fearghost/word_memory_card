@@ -16,3 +16,6 @@
 
 ## [2026-10-13 16:56:29]
 - Fixed CI/CD pipeline error by restoring missing gradlew and gradle wrapper files.
+
+## [2026-10-13 18:20:53]
+- Fixed CI/CD error by correcting the gradlew script to use -cp for finding GradleWrapperMain.
