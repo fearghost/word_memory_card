@@ -1,25 +1,40 @@
-# Project Overview: OCR English Flashcard App
+# OCR English Flashcard App
 
-This project aims to build an Android application that automates the creation of English vocabulary flashcards using OCR technology.
+An Android application designed to automate the creation of English vocabulary flashcards using OCR technology.
 
-## Summary
-The app will allow users to:
-1. Capture or upload multiple images.
-2. Use OCR to extract text.
-3. Parse the text into English words and their meanings.
-4. Save these into named "Word Bundles".
-5. Study via interactive flashcards (Word -> Meaning flip).
-6. Listen to pronunciations in US, UK, and AU accents using TTS.
+## 🚀 Overview
 
-## GitHub Repository
-- URL: [https://github.com/fearghost/word_memory_card](https://github.com/fearghost/word_memory_card)
+The app allows users to capture or upload images to extract text using OCR, parse that text into English words and their meanings, and organize them into manageable **"Word Bundles"**. Users can then study these words via interactive flashcards with support for various English accents (US, UK, AU) through Text-to-Speech (TTS).
 
-## CI/CD Pipeline (GitHub Actions)
-To ensure high code quality and automated distribution, the project follows a professional CI/CD workflow:
-- **Continuous Integration (CI):** Every pull request and push to `main` triggers an automated workflow that runs unit tests and linting to catch regressions and style violations early.
-- **Continuous Delivery/Deployment (CD):** When a new version tag is created (e.g., `v1.0.0`), GitHub Actions automatically builds the production-ready APK/AAB and creates a GitHub Release, attaching the build artifacts for easy download.
+## ✨ Core Features
 
-## Documentation
-For a detailed technical roadmap, architecture, and feature breakdown, please refer to the planning document:
+- **Multi-Image OCR Processing:** Capture or upload multiple photos simultaneously for text extraction.
+- **Smart Parsing:** Automatically identifies English words and their corresponding meanings from raw OCR output.
+- **Word Bundle Management:** Organize extracted words into named collections (e.g., "Travel Vocabulary", "Business English").
+- **Interactive Flashcards:** Study via a smooth, animated flip-card interface (Word $\leftrightarrow$ Meaning).
+- **Multi-Accent Audio (TTS):** Listen to pronunciations in US, UK, and AU accents to enhance learning.
 
-[Detailed Development Plan](./doc/plan.md)
+## 🛠️ Technical Stack
+
+- **Platform:** Android (Kotlin)
+- **UI Framework:** Jetpack Compose
+- **OCR Engine:** Google ML Kit (Text Recognition API)
+- **Database:** Room Persistence Library (SQLite)
+- **Text-to-Speech:** Android `TextToSpeech` engine
+- **Image Handling:** Coil / Glide
+
+## 📦 Development & CI/CD
+
+This project follows a professional CI/CD workflow via **GitHub Actions**:
+
+- **Continuous Integration (CI):** Automated unit tests and linting run on every pull request and push to `main`.
+- **Continuous Delivery (CD):** Production-ready APK/AAB builds and GitHub Releases are automatically generated upon new version tags (e.g., `v1.0.0`).
+
+## 📖 Documentation
+
+For a detailed technical roadmap, architecture, and feature breakdown, please refer to the development plan:
+
+[Detailed Development Plan](./docs/plan.md)
+
+---
+**GitHub Repository:** [word_memory_card](https://github.com/fearghost/word_memory_card)
