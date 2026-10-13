@@ -1,4 +1,3 @@
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -48,6 +47,9 @@ dependencies {
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
+    
+    // ML Kit
     implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.mlkit:text-recognition-latin:16.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }

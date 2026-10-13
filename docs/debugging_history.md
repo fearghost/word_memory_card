@@ -37,3 +37,7 @@
   **Fix**: Added `androidx.compose.ui:ui-graphics` to `build.gradle.kts`.
 - **Issue**: Room warnings regarding foreign key indexing and schema export.
   **Fix**: Added index to `WordItemEntity.kt` for `bundleId` and set `exportSchema = false` in `AppDatabase.kt`.
+
+## [2026-10-14 00:39:55]
+- Issue: Compilation failure in GitHub Actions: Unresolved ML Kit references, Type mismatch in FlashcardView, and Unresolved SnackbarHostState in ParsingScreen.
+- Fix: Added ML Kit Latin dependency, fixed type mismatch in FlashcardView using .toFloat(), and added explicit Material3 imports and @OptIn for experimental APIs.

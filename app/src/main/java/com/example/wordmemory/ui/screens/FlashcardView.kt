@@ -27,7 +27,7 @@ fun FlashcardView(
     Card(
         modifier = modifier
             .size(width = 320.dp, height = 220.dp)
-            .graphicsLayer(rotationZ = rotation.toInt())
+            .graphicsLayer(rotationZ = rotation.toFloat())
             .clickable { rotated = !rotated },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp

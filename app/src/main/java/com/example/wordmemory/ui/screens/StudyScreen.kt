@@ -12,6 +12,7 @@ import com.example.wordmemory.domain.model.ParsedWord
 import com.example.wordmemory.tts.TtsManager
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyScreen(
     words: List<ParsedWord>,

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wordmemory.ui.viewmodel.WordViewModel
 import com.example.wordmemory.domain.model.ParsedWord
 import kotlinx.coroutines.launch
+import androidx.compose.material3.rememberSnackbarHostState
 
 @Composable
 fun ParsingScreen(viewModel: WordViewModel) {

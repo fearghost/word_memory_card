@@ -15,6 +15,7 @@ import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.ui.viewmodel.WordViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     repository: WordRepository,
