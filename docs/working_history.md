@@ -34,3 +34,8 @@
 
 ## [2026-10-13 20:24:57]
 - Fixed primary compilation blockers: corrected WordRepository structure, fixed TextParser regex, and added ML Kit dependency.
+
+## [2026-10-13] Fixed compilation errors in Android build.
+- Resolved ML Kit unresolved references by correcting dependency name and adding coroutine play-services.
+- Resolved Compose unresolved references by adding ui-graphics dependency.
+- Fixed Room warnings by adding an index on the foreign key column and setting exportSchema to false.

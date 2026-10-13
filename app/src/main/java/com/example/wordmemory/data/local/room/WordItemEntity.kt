@@ -13,7 +13,8 @@ import androidx.room.PrimaryKey
             childColumns = ["bundleId"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [androidx.room.Index(value = ["bundleId"])]
 )
 data class WordItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

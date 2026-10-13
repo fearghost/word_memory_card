@@ -29,3 +29,11 @@
 - Fix: 1. Added ML Kit Text Recognition dependency.
 2. Fixed premature class closure in WordRepository.kt.
 3. Fixed illegal escape sequence in TextParser.kt regex.
+
+## [2026-10-13] Compilation failure in GitHub Actions (ML Kit, Room, Compose)
+- **Issue**: `MLKitOCRManager.kt` had unresolved references (`TextRecognitionOptions`, `tasks`).
+  **Fix**: Corrected `com.google.android.mlkit:text-recognition` to `com.google.mlkit:text-recognition` and added `kotlinx-coroutines-play-services`.
+- **Issue**: `FlashcardView.kt` and `ParsingScreen.kt` had unresolved references (`graphicsLayer`, `rememberSnackbarHostState`).
+  **Fix**: Added `androidx.compose.ui:ui-graphics` to `build.gradle.kts`.
+- **Issue**: Room warnings regarding foreign key indexing and schema export.
+  **Fix**: Added index to `WordItemEntity.kt` for `bundleId` and set `exportSchema = false` in `AppDatabase.kt`.
