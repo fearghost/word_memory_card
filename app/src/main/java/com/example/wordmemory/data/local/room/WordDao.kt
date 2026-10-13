@@ -9,7 +9,7 @@ interface WordDao {
     fun getAllBundles(): Flow<List<WordBundleEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBundle(bundle: WordBundleEntity)
+    suspend fun insertBundle(bundle: WordBundleEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItems(items: List<WordItemEntity>)
