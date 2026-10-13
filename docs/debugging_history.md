@@ -19,3 +19,7 @@
 ## [2026-10-13 19:05:51]
 - Issue: Build failure: `checkDebugAarMetadata` - `mipmap/ic_launcher` not found and `android:style/Theme.Material3.DayNight.NoActionBar` not found.
 - Fix: Corrected theme namespace in AndroidManifest.xml and created missing resource files (strings.xml, colors.xml, ic_launcher.xml).
+
+## [2026-10-13 19:56:11]
+- Issue: Build failure: `Theme.Material3.DayNight.NoActionBar` not found in resources.
+- Fix: Added `com.google.android.material:material` library to `app/build.gradle.kts` to provide the required theme.

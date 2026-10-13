@@ -28,3 +28,6 @@
 
 ## [2026-10-13 19:05:51]
 - Fixed Android resource linking errors by adding missing resources and correcting theme namespace.
+
+## [2026-10-13 19:56:11]
+- Fixed Material3 theme resolution by adding com.google.android.material:material dependency.
