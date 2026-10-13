@@ -39,7 +39,6 @@ fun StudyScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Header: Progress and Accent Selection
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Card ${currentIndex + 1} of ${words.size}",
@@ -68,7 +67,6 @@ fun StudyScreen(
                 }
             }
 
-            // Main Card Area
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 FlashcardView(
                     word = words[currentIndex],
@@ -83,7 +81,6 @@ fun StudyScreen(
                 }
             }
 
-            // Navigation Footer
             Button(
                 onClick = { currentIndex++ },
                 modifier = Modifier.fillMaxWidth()

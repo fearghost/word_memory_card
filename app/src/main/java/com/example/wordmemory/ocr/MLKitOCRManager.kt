@@ -16,7 +16,7 @@ class MLKitOCRManager(private val context: Context) : OCRManager {
         
         return OCRResult(
             rawText = visionText.text,
-            confidence = 1.0f // ML Kit doesn't provide a direct confidence score per image easily
+            confidence = 1.0f
         )
     }
 }
