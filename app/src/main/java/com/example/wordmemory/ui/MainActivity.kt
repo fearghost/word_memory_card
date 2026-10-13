@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
         val parser = TextParser()
         val mockOcrManager = MockOCRManager()
         val viewModel = WordViewModel(mockOcrManager, parser)
+        val ttsManager = com.example.wordmemory.tts.AndroidTtsManager(this)
 
         setContent {
             MaterialTheme {

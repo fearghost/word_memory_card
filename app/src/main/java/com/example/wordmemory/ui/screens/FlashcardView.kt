@@ -27,7 +27,7 @@ fun FlashcardView(
     Card(
         modifier = modifier
             .size(width = 320.dp, height = 220.dp)
-            .graphics(rotation = rotation)
+            .graphicsLayer(rotationZ = rotation.toInt())
             .clickable { rotated = !rotated },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
@@ -47,7 +47,7 @@ fun FlashcardView(
                 Text(
                     text = word.meaning,
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.graphics(rotation = 180f),
+                    modifier = Modifier.graphicsLayer(rotationZ = 180f),
                     color = MaterialTheme.colorScheme.secondary
                 )
             }

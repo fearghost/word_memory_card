@@ -40,7 +40,7 @@ fun AppNavigation(
             ReviewEditScreen(
                 bundleId = bundleId,
                 viewModel = viewModel,
-                onSave = { viewModel.saveEditedWords(bundleId, it, repository) },
+                onSave = { viewModel.saveWordsToBundle(bundleId, it, repository) },
                 onCancel = { navController.popBackStack() }
             )
         }
