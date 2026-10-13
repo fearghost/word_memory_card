@@ -7,3 +7,8 @@
 ## [2026-10-14] Fixed Android compilation errors in CI
 - Resolved dependency resolution conflict by removing redundant repositories block.
 - Fixed ML Kit Unresolved reference and parameter mismatch by switching to GMS version and explicitly versioning Material 3.
+
+## [2026-10-14] Fixed Android compilation errors in CI (Multiple attempts)
+- Resolved dependency resolution conflict by removing redundant repositories block.
+- Successfully reverted and stabilized ML Kit dependency to the Bundled version (16.0.0) after GMS version failed to resolve in CI.
+- Optimized MLKitOCRManager to use standard parameterless getClient() call.
