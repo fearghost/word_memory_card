@@ -15,3 +15,7 @@
 ## [2026-10-13 18:34:06]
 - Issue: Build failure: `checkDebugAarMetadata` failed because `android.useAndroidX` was not enabled.
 - Fix: Created `gradle.properties` and set `android.useAndroidX=true` and `android.enableJetifier=true`.
+
+## [2026-10-13 19:05:51]
+- Issue: Build failure: `checkDebugAarMetadata` - `mipmap/ic_launcher` not found and `android:style/Theme.Material3.DayNight.NoActionBar` not found.
+- Fix: Corrected theme namespace in AndroidManifest.xml and created missing resource files (strings.xml, colors.xml, ic_launcher.xml).

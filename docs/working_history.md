@@ -25,3 +25,6 @@
 
 ## [2026-10-13 18:34:06]
 - Fixed AndroidX compatibility issue by adding gradle.properties.
+
+## [2026-10-13 19:05:51]
+- Fixed Android resource linking errors by adding missing resources and correcting theme namespace.
