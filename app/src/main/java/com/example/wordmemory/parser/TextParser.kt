@@ -16,7 +16,7 @@ class TextParser {
         val lines = rawText.lines()
 
         // Regex patterns for common separators: ':', '-', '|', '='
-        val pattern = Pattern.compile("[:\-\|\=]")
+        val pattern = Pattern.compile("""[:\-|\=]""" )
 
         for (line in lines) {
             val trimmedLine = line.trim()
