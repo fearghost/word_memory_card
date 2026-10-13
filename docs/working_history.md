@@ -13,3 +13,6 @@
 
 ## [2026-10-13 15:40:13]
 - Completed Phase 5: Finished all UI/UX polishing, error handling, and the complete user flow (Create, Edit, Delete, Study, OCR/Parsing).
+
+## [2026-10-13 16:56:29]
+- Fixed CI/CD pipeline error by restoring missing gradlew and gradle wrapper files.
