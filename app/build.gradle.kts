@@ -37,6 +37,7 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("com.google.android.material:material:1.11.0")
     
     // Room
@@ -46,5 +47,5 @@ dependencies {
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.android.mlkit:text-recognition:16.0.0")
 }
