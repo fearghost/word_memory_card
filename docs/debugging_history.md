@@ -23,3 +23,9 @@
 ## [2026-10-13 19:56:11]
 - Issue: Build failure: `Theme.Material3.DayNight.NoActionBar` not found in resources.
 - Fix: Added `com.google.android.material:material` library to `app/build.gradle.kts` to provide the required theme.
+
+## [2026-10-13 20:24:57]
+- Issue: Massive compilation failure: Unresolved references in Repository, ML Kit, and various UI components.
+- Fix: 1. Added ML Kit Text Recognition dependency.
+2. Fixed premature class closure in WordRepository.kt.
+3. Fixed illegal escape sequence in TextParser.kt regex.

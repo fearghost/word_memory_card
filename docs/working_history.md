@@ -31,3 +31,6 @@
 
 ## [2026-10-13 19:56:11]
 - Fixed Material3 theme resolution by adding com.google.android.material:material dependency.
+
+## [2026-10-13 20:24:57]
+- Fixed primary compilation blockers: corrected WordRepository structure, fixed TextParser regex, and added ML Kit dependency.
