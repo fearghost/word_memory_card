@@ -36,7 +36,7 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.02.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("com.google.android.material:material:1.11.0")
     
@@ -48,8 +48,8 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
     
-    // ML Kit
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    // ML Kit (Using GMS version for better CI compatibility)
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:18.3.1")
     implementation("com.google.mlkit:vision-common:16.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }
