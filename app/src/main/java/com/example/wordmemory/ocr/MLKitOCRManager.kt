@@ -6,6 +6,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import kotlinx.coroutines.tasks.await
 
+// DEBUG: This is a test comment to verify CI code
 class MLKitOCRManager(private val context: Context) : OCRManager {
     private val recognizer = TextRecognition.getClient()
 
