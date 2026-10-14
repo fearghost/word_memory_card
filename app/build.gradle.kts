@@ -53,11 +53,3 @@ dependencies {
     implementation("com.google.mlkit:vision-common:16.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }
-
-configurations.all {
-    exclude(group = "com.google.android.gms", module = "play-services-mlkit-text-recognition")
-    resolutionStrategy {
-        force("com.google.mlkit:text-recognition:16.0.0")
-        force("com.google.mlkit:vision-common:16.0.0")
-    }
-}
