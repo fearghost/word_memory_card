@@ -56,10 +56,6 @@ dependencies {
 }
 
 configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("com.google.android.gms:play-services-mlkit-text-recognition"))
-            .using(module("com.google.mlkit:text-recognition:16.0.1"))
-        substitute(module("com.google.android.gms:play-services-mlkit-text-recognition-common"))
-            .using(module("com.google.mlkit:vision-common:16.0.1"))
-    }
+    exclude(group = "com.google.android.gms", module = "play-services-mlkit-text-recognition")
+    exclude(group = "com.google.android.gms", module = "play-services-mlkit-text-recognition-common")
 }
