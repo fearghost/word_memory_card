@@ -14,3 +14,8 @@
 - Issue 1: Unresolved references for Material 3 and ML Kit.
 - Issue 2: GMS ML Kit version 18.3.1 not found in Google Maven repo.
 - Resolution: Reverted to Bundled ML Kit (com.google.mlkit:text-recognition:16.0.0) and ensured correct parameterless API usage.
+
+## [2026-10-14] Persistent CI error mismatch (Code sync suspected)
+- Issue: GitHub Action reports identical errors as before, despite local changes being pushed.
+- Cause: CI environment is likely building an old commit or using a stale cache.
+- Action: Added `resolutionStrategy` and a debug comment to confirm code synchronization via CI logs.
