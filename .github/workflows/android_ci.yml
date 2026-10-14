@@ -18,7 +18,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
+        # cache: gradle  # Disabled temporarily to force cache invalidation
+
 
     - name: Grant execute permission to gradlew
       run: chmod +x gradlew
