@@ -11,14 +11,13 @@ import androidx.compose.ui.unit.dp
 import com.example.wordmemory.ui.viewmodel.WordViewModel
 import com.example.wordmemory.domain.model.ParsedWord
 import kotlinx.coroutines.launch
-import androidx.compose.material3.rememberSnackbarHostState
 
 @Composable
 fun ParsingScreen(viewModel: WordViewModel) {
     val parsedWords by viewModel.parsedWords.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val snackbarHostState = rememberSnackbarHostState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(errorMessage) {
