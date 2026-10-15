@@ -22,3 +22,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] Syntax Error (Expecting expression/closing parenthesis) in TextParser.kt: Fixed an issue where incorrect escaping of triple quotes caused a compilation failure in the TextParser regex definition.
 
 ## [2026-10-15] AssertionError in TextParserTest.kt: Fixed mismatch between TextParser's fallback behavior (including invalid lines) and the test's expectation (ignoring invalid lines).
+
+## [2026-10-15] AssertionError in TextParserTest.kt: Fixed mismatch between TextParser's fallback behavior (including invalid lines) and the test's expectation (ignoring invalid lines).

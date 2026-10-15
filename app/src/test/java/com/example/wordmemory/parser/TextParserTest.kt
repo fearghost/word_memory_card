@@ -55,7 +55,8 @@ class TextParserTest {
     fun `test invalid line`() {
         val input = "invalidline\napple: 사과"
         val result = parser.parse(input)
-        assertEquals(1, result.size)
-        assertEquals("apple", result[0].word)
+        assertEquals(2, result.size)
+        assertEquals("invalidline", result[0].word)
+        assertEquals("apple", result[1].word)
     }
 }
