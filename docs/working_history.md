@@ -25,3 +25,5 @@
 ## [2026-10-15] Fixed unit test failure in TextParserTest.kt: Re-introduced fallback logic in TextParser to show raw text during OCR, and updated unit tests to match this behavior.
 
 ## [2026-10-15] Implemented Hangul-based automatic splitting in TextParser: Enhanced OCR parsing to link English words and Korean meanings on the same line even without explicit separators.
+
+## [2026-10-15] Implemented CJK (Chinese, Japanese, Korean) support in ML Kit OCR: Switched from Latin-only to CJK text recognition to enable Korean character detection.

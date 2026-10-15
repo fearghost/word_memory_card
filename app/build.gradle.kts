@@ -59,8 +59,8 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
     
-    // ML Kit (Bundled version)
-    implementation("com.google.mlkit:text-recognition:16.0.1")
+    // ML Kit (Bundled version for CJK support)
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.0")
     implementation("com.google.mlkit:vision-common:16.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     testImplementation("junit:junit:4.13.2")

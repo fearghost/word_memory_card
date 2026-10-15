@@ -28,3 +28,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] AssertionError in TextParserTest.kt: Fixed mismatch between TextParser's fallback behavior (including invalid lines) and the test's expectation (ignoring invalid lines).
 
 ## [2026-10-15] Korean meanings missing on flashcard back side: Implemented regex-based Hangul detection in TextParser to split English and Korean words on the same line when no explicit separator is present.
+
+## [2026-10-15] Korean text not detected in OCR: Identified that the OCR engine was using Latin-only options; switched to CJK (Chinese/Japanese/Korean) recognition model.
