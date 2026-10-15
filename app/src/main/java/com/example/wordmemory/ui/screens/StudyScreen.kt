@@ -21,6 +21,12 @@ fun StudyScreen(
 ) {
     var currentIndex by remember { mutableIntStateOf(0) }
     var selectedLocale by remember { mutableStateOf(Locale.US) }
+    var isRotated by remember { mutableStateOf(false) }
+
+    // Reset rotation when the card changes
+    LaunchedEffect(currentIndex) {
+        isRotated = false
+    }
 
     if (words.isEmpty() || currentIndex >= words.size) {
         Column(
@@ -71,6 +77,8 @@ fun StudyScreen(
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 FlashcardView(
                     word = words[currentIndex],
+                    isRotated = isRotated,
+                    onCardClick = { isRotated = !isRotated },
                     modifier = Modifier.fillMaxSize()
                 )
                 

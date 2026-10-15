@@ -13,9 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -25,12 +22,12 @@ import com.example.wordmemory.domain.model.ParsedWord
 @Composable
 fun FlashcardView(
     word: ParsedWord,
+    isRotated: Boolean,          // 상태를 외부에서 주입받음
+    onCardClick: () -> Unit,     // 클릭 이벤트도 외부로 전달
     modifier: Modifier = Modifier
 ) {
-    var rotated by remember { mutableStateOf(false) }
-
     val rotation by animateFloatAsState(
-        targetValue = if (rotated) 180f else 0f,
+        targetValue = if (isRotated) 180f else 0f,
         animationSpec = tween(durationMillis = 600),
         label = "flashcardRotation"
     )
@@ -42,7 +39,7 @@ fun FlashcardView(
                 rotationY = rotation
                 cameraDistance = 8f * density
             }
-            .clickable { rotated = !rotated },
+            .clickable { onCardClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box(
