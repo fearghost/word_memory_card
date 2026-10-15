@@ -3,7 +3,8 @@ package com.example.wordmemory.ui.screens
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,11 +43,13 @@ fun FlashcardView(
             .clickable { onCardClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        // Box의 모든 인자를 명시하여 Box$default 호출(기본값 생성)을 방지합니다.
-        Box(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            contentAlignment = Alignment.Center,
-            propagateMinConstraints = false
+        // Box를 전혀 사용하지 않고 Card 내부의 기본 Column 활용
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (rotation <= 90f) {
                 Text(
@@ -55,18 +58,19 @@ fun FlashcardView(
                     color = MaterialTheme.colorScheme.primary
                 )
             } else {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                    propagateMinConstraints = false
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            rotationY = 180f
+                        },
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = word.meaning,
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.graphicsLayer {
-                            rotationY = 180f
-                        }
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
