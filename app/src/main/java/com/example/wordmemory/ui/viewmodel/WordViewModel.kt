@@ -34,7 +34,8 @@ class WordViewModel(
                 try {
                     val result = ocrManager.processImage(uri)
                     val words = textParser.parse(result.rawText)
-                    allWords.addAll(words)
+                    // Associate each extracted word with the current image URI
+                    allWords.addAll(words.map { it.copy(imagePath = uri.toString()) })
                 } catch (e: Exception) {
                     _errorMessage.value = "Error processing image: ${e.localizedMessage}"
                     break

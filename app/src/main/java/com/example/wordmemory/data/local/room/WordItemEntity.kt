@@ -20,5 +20,6 @@ data class WordItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val bundleId: Long,
     val word: String,
-    val meaning: String
+    val meaning: String,
+    val imagePath: String?
 )

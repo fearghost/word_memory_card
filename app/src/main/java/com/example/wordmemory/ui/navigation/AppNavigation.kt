@@ -47,6 +47,7 @@ fun AppNavigation(
         composable("new_bundle") { 
             NewBundleScreen(
                 repository = repository,
+                viewModel = viewModel,
                 onNavigationUp = { navController.popBackStack() }, 
                 onBundleCreated = { navController.popBackStack() }
             ) 
