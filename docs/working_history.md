@@ -33,3 +33,5 @@
 ## [2026-10-15] Resolved ML Kit compilation error by switching to Korean-specific OCR module: Replaced Latin-only/Chinese-based recognizer with KoreanTextRecognizerOptions to correctly support Hangul.
 
 ## [2026-10-15] Implemented strict label-based parsing in TextParser to prevent noise capture: Switched from implicit language-based transitions to explicit label-based transitions, ensuring page numbers or dates are not captured as words/meanings.
+
+## [2026-10-15] Updated TextParser to use strict label-based parsing and synchronized TestParserTest to match the new logic. This prevents noise (like page numbers) from being captured as words/meanings.
