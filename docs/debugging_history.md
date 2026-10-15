@@ -42,3 +42,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] AssertionError in TextParserTest: The parser was skipping data on the same line as the label due to the 'continue' keyword. Resolved by stripping the label and processing the remaining content in the same loop iteration.
 
 ## [2026-10-15] User reported OCR alignment/quality issues. Implemented a debug view to see unparsed text.
+
+## [2026-10-15] User reported OCR quality and alignment issues. Implemented a raw OCR text display for debugging purposes.
