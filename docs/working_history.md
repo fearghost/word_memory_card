@@ -35,3 +35,5 @@
 ## [2026-10-15] Implemented strict label-based parsing in TextParser to prevent noise capture: Switched from implicit language-based transitions to explicit label-based transitions, ensuring page numbers or dates are not captured as words/meanings.
 
 ## [2026-10-15] Updated TextParser to use strict label-based parsing and synchronized TestParserTest to match the new logic. This prevents noise (like page numbers) from being captured as words/meanings.
+
+## [2026-10-15] Fixed TextParser logic by implementing label-stripping to allow data on the same line as the label and ensuring strict state transitions. This resolves the AssertionError in unit tests and correctly filters noise like page numbers.

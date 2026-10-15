@@ -33,31 +33,40 @@ class TextParser {
             if (trimmed.isEmpty()) continue
             val lower = trimmed.lowercase()
 
-            // 1. Explicit Label Transitions (The ONLY way to change states)
+            var contentToProcess = trimmed
+
+            // 1. Explicit Label Transitions and Stripping
+            // We check for labels and if a label is found, we update the state 
+            // and strip the label part so we can process the remaining content on the same line.
             if (lower.contains("word")) {
                 currentState = ParserState.COLLECTING_WORD
-                continue
+                contentToProcess = trimmed.replace(Regex("(?i)word[:\\s]*"), "").trim()
             } else if (lower.contains("meaning")) {
                 currentState = ParserState.COLLECTING_MEANING
-                continue
+                contentToProcess = trimmed.replace(Regex("(?i)meaning[:\\s]*"), "").trim()
             }
 
             // 2. Data Collection with Type Validation
-            when (currentState) {
-                ParserState.COLLECTING_WORD -> {
-                    // Only add to words if it doesn't contain Hangul (to avoid accidental meaning capture)
-                    if (hangulRegex.find(trimmed) == null) {
-                        words.add(trimmed)
+            // If the line had a label, contentToProcess now contains the data on that same line.
+            // If it didn't, contentToProcess is just the original line.
+            val processedTrimmed = contentToProcess.trim()
+            if (processedTrimmed.isNotEmpty()) {
+                when (currentState) {
+                    ParserState.COLLECTING_WORD -> {
+                        // Only add to words if it doesn't contain Hangul (to avoid accidental meaning capture)
+                        if (hangulRegex.find(processedTrimmed) == null) {
+                            words.add(processedTrimmed)
+                        }
                     }
-                }
-                ParserState.COLLECTING_MEANING -> {
-                    // Only add to meanings if it contains Hangul (to avoid capturing noise like "Page 2")
-                    if (hangulRegex.find(trimmed) != null) {
-                        meanings.add(trimmed)
+                    ParserState.COLLECTING_MEANING -> {
+                        // Only add to meanings if it contains Hangul (to avoid capturing noise like "Page 2")
+                        if (hangulRegex.find(processedTrimmed) != null) {
+                            meanings.add(processedTrimmed)
+                        }
                     }
-                }
-                ParserState.SEARCHING -> {
-                    // Ignore everything until a label is found
+                    ParserState.SEARCHING -> {
+                        // Ignore everything until a label is found
+                    }
                 }
             }
         }
