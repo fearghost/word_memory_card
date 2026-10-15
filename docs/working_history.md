@@ -50,3 +50,5 @@
 
 ## [2026-10-16]
 Implemented the Hybrid Semantic Matcher (Local + Cloud LLM). This replaces the rule-based parsing with a tiered approach (TextCleaner -> LocalMatcher -> CloudLLMMatcher) for high-accuracy OCR word-meaning extraction.
+## [2026-10-16]
+Fixed Gradle dependency error by adding mavenCentral() and JitPack to settings.gradle.kts to resolve Generative AI SDK download issue.

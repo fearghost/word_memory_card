@@ -54,3 +54,6 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-16] Refactoring TextParser to be suspend-based
 Issue: Changing TextParser.parse() to a suspend function broke MainActivity and TextParserTest.
 Fix: Updated MainActivity to pass context/API key and updated tests with runTest and mockk.
+## [2026-10-16] Dependency Error: com.google.generativeai:generativeai:0.7.0 not found
+Issue: Gradle could not find the Generative AI SDK in the existing repositories.
+Fix: Added mavenCentral() and jitpack to dependencyResolutionManagement in settings.gradle.kts.
