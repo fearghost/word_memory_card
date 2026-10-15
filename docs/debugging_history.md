@@ -57,3 +57,6 @@ Fix: Updated MainActivity to pass context/API key and updated tests with runTest
 ## [2026-10-16] Dependency Error: com.google.generativeai:generativeai:0.7.0 not found
 Issue: Gradle could not find the Generative AI SDK in the existing repositories.
 Fix: Added mavenCentral() and jitpack to dependencyResolutionManagement in settings.gradle.kts.
+## [2026-10-16] Dependency Error: com.google.generativeai:generativeai:0.7.0 not found
+Issue: Version 0.7.0 was not found in Maven Central.
+Fix: Updated version to 0.9.0 in app/build.gradle.kts.
