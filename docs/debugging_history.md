@@ -46,3 +46,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] User reported OCR quality and alignment issues. Implemented a raw OCR text display for debugging purposes.
 
 ## [2026-10-15] Resolved 'Unresolved reference: verticalScroll' and 'rememberScrollState' in NewBundleScreen.kt by adding necessary imports.
+
+## [2026-10-16] User reported OCR quality and alignment issues. Implemented a raw OCR text display for debugging purposes.
