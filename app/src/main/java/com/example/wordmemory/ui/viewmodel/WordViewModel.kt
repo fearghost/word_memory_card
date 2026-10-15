@@ -18,6 +18,9 @@ class WordViewModel(
     private val _parsedWords = MutableStateFlow<List<ParsedWord>>(emptyList())
     val parsedWords: StateFlow<List<ParsedWord>> = _parsedWords
 
+    private val _rawOcrText = MutableStateFlow<String?>(null)
+    val rawOcrText: StateFlow<String?> = _rawOcrText
+
     private val _isProcessing = MutableStateFlow(false)
     val isProcessing: StateFlow<Boolean> = _isProcessing
 
@@ -33,6 +36,7 @@ class WordViewModel(
             for (uri in uris) {
                 try {
                     val result = ocrManager.processImage(uri)
+                    _rawOcrText.value = result.rawText
                     if (result.rawText.isBlank()) {
                         _errorMessage.value = "OCR failed to detect any text in one of the images. Please ensure the photo is clear and well-lit."
                         break

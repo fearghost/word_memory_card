@@ -40,3 +40,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] Test failure due to mismatch between new TextParser logic and old TextParserTest. Resolved by updating the test cases to use explicit labels and noise-filtering verification.
 
 ## [2026-10-15] AssertionError in TextParserTest: The parser was skipping data on the same line as the label due to the 'continue' keyword. Resolved by stripping the label and processing the remaining content in the same loop iteration.
+
+## [2026-10-15] User reported OCR alignment/quality issues. Implemented a debug view to see unparsed text.

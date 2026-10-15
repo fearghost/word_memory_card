@@ -37,3 +37,5 @@
 ## [2026-10-15] Updated TextParser to use strict label-based parsing and synchronized TestParserTest to match the new logic. This prevents noise (like page numbers) from being captured as words/meanings.
 
 ## [2026-10-15] Fixed TextParser logic by implementing label-stripping to allow data on the same line as the label and ensuring strict state transitions. This resolves the AssertionError in unit tests and correctly filters noise like page numbers.
+
+## [2026-10-15] Implemented Raw OCR text debugging view in NewBundleScreen to help diagnose OCR quality and alignment issues.

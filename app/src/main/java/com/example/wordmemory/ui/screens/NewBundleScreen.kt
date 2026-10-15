@@ -29,6 +29,7 @@ fun NewBundleScreen(
     val parsedWords by viewModel.parsedWords.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val rawOcrText by viewModel.rawOcrText.collectAsState()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
@@ -89,6 +90,21 @@ fun NewBundleScreen(
                             }
                         }
                     }
+                }
+            }
+
+            if (rawOcrText != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Raw OCR Text (Debug):", style = MaterialTheme.typography.labelLarge)
+                OutlinedCard(
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 150.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Text(
+                        text = rawOcrText!!,
+                        modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
 
