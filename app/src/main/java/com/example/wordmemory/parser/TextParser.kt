@@ -3,58 +3,72 @@ package com.example.wordmemory.parser
 import com.example.wordmemory.domain.model.ParsedWord
 
 class TextParser {
+    private enum class ParserState {
+        SEARCHING,
+        COLLECTING_WORD,
+        COLLECTING_MEANING
+    }
+
     /**
-     * Extracts word-meaning pairs from raw OCR text.
-     * Supports patterns like:
-     * "apple: 사과" (Explicit separator)
-     * "apple 사과" (Implicit separator - split by Hangul)
+     * Extracts word-meaning pairs from raw OCR text using a strict label-based state machine.
+     * 
+     * Pattern: [Word Label] -> [English Content] -> [Meaning Label] -> [Korean Content] ...
+     * 
+     * This version is optimized to ignore noise (like page numbers or dates) that 
+     * appears between the intended data rows, by requiring explicit labels for 
+     * state transitions and validating content type (English vs Hangul).
      */
     fun parse(rawText: String): List<ParsedWord> {
-        val results = mutableListOf<ParsedWord>()
+        val words = mutableListOf<String>()
+        val meanings = mutableListOf<String>()
+        var currentState = ParserState.SEARCHING
+        
+        // Regex for Hangul (Korean)
+        val hangulRegex = Regex("[\\uAC00-\\uD7A3\\u3130-\\u318F]")
+
         val lines = rawText.lines()
 
-        // Explicit separators: ':', '-', '|', '='
-        val separatorRegex = Regex("[:\\-|\\=]")
-
         for (line in lines) {
-            val trimmedLine = line.trim()
-            if (trimmedLine.isEmpty()) continue
+            val trimmed = line.trim()
+            if (trimmed.isEmpty()) continue
+            val lower = trimmed.lowercase()
 
-            val match = separatorRegex.find(trimmedLine)
-            if (match != null) {
-                val index = match.range.first
-                val word = trimmedLine.substring(0, index).trim()
-                val meaning = trimmedLine.substring(index + 1).trim()
+            // 1. Explicit Label Transitions (The ONLY way to change states)
+            if (lower.contains("word")) {
+                currentState = ParserState.COLLECTING_WORD
+                continue
+            } else if (lower.contains("meaning")) {
+                currentState = ParserState.COLLECTING_MEANING
+                continue
+            }
 
-                if (word.isNotEmpty() && meaning.isNotEmpty()) {
-                    results.add(ParsedWord(word, meaning))
-                } else {
-                    // If one side is empty, treat the whole line as a word
-                    results.add(ParsedWord(trimmedLine, ""))
-                }
-            } else {
-                // No explicit separator found.
-                // Attempt to split by the first occurrence of a Hangul character.
-                val hangulRegex = Regex("[\\uAC00-\\uD7A3\\u3130-\\u318F]")
-                val hangulMatch = hangulRegex.find(trimmedLine)
-
-                if (hangulMatch != null) {
-                    val index = hangulMatch.range.first
-                    val word = trimmedLine.substring(0, index).trim()
-                    val meaning = trimmedLine.substring(index).trim()
-
-                    if (word.isNotEmpty() && meaning.isNotEmpty()) {
-                        results.add(ParsedWord(word, meaning))
-                    } else {
-                        // If split results in empty word or meaning, treat as single word
-                        results.add(ParsedWord(trimmedLine, ""))
+            // 2. Data Collection with Type Validation
+            when (currentState) {
+                ParserState.COLLECTING_WORD -> {
+                    // Only add to words if it doesn't contain Hangul (to avoid accidental meaning capture)
+                    if (hangulRegex.find(trimmed) == null) {
+                        words.add(trimmed)
                     }
-                } else {
-                    // No Hangul found, treat the whole line as a word
-                    results.add(ParsedWord(trimmedLine, ""))
+                }
+                ParserState.COLLECTING_MEANING -> {
+                    // Only add to meanings if it contains Hangul (to avoid capturing noise like "Page 2")
+                    if (hangulRegex.find(trimmed) != null) {
+                        meanings.add(trimmed)
+                    }
+                }
+                ParserState.SEARCHING -> {
+                    // Ignore everything until a label is found
                 }
             }
         }
+
+        // 3. Pairing the collected words and meanings
+        val results = mutableListOf<ParsedWord>()
+        val count = minOf(words.size, meanings.size)
+        for (i in 0 until count) {
+            results.add(ParsedWord(words[i], meanings[i]))
+        }
+
         return results
     }
 }

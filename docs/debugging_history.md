@@ -34,3 +34,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] Korean meanings missing in flashcards: Identified that the OCR engine was using Latin-only options; switched to CJK (Chinese, Japanese, Korean) model to detect Hangul in table cells.
 
 ## [2026-10-15] compileDebugKotlin FAILED (Unresolved reference: DEFAULT_OPTIONS): Identified that the OCR client initialization was using incorrect/missing options for Korean. Fixed by adding text-recognition-korean dependency and using KoreanTextRecognizerOptions.Builder().build().
+
+## [2026-10-15] Potential noise capture (e.g., page numbers) in OCR: Identified that implicit transitions could capture non-data text. Fixed by requiring explicit 'Word' and 'Meaning' labels for state changes and adding language-type validation.
