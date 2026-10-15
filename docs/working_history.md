@@ -45,3 +45,5 @@
 ## [2026-10-15] Fixed compilation error in NewBundleScreen.kt by adding missing foundation imports (rememberScrollState, verticalScroll).
 
 ## [2026-10-16] Implemented raw OCR text debugging view in NewBundleScreen to help diagnose alignment and recognition issues.
+
+## [2026-10-16] Documented the Hybrid Semantic Matcher architecture in docs/architecture/semantic_matcher.md and linked it in .hermes.md.
