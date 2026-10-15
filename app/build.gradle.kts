@@ -21,6 +21,11 @@ android {
             isMinifyEnabled = false
         }
     }
+
+    buildFeatures {
+        compose = true
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
