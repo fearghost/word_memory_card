@@ -41,3 +41,5 @@
 ## [2026-10-15] Implemented Raw OCR text debugging view in NewBundleScreen to help diagnose OCR quality and alignment issues.
 
 ## [2026-10-15] Added a debug view in NewBundleScreen to display raw OCR text, enabling better diagnosis of OCR quality and parsing alignment issues.
+
+## [2026-10-15] Fixed compilation error in NewBundleScreen.kt by adding missing foundation imports (rememberScrollState, verticalScroll).
