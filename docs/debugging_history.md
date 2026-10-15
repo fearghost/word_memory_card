@@ -60,3 +60,6 @@ Fix: Added mavenCentral() and jitpack to dependencyResolutionManagement in setti
 ## [2026-10-16] Dependency Error: com.google.generativeai:generativeai:0.7.0 not found
 Issue: Version 0.7.0 was not found in Maven Central.
 Fix: Updated version to 0.9.0 in app/build.gradle.kts.
+## [2026-10-16] Dependency Error: Incorrect Group ID for Generative AI SDK
+Issue: The dependency was using the wrong Group ID (com.google.generativeai).
+Fix: Corrected the Group ID to com.google.ai.client.generativeai in app/build.gradle.kts.
