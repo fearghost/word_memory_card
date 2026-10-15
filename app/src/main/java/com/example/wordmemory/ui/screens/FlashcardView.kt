@@ -22,8 +22,8 @@ import com.example.wordmemory.domain.model.ParsedWord
 @Composable
 fun FlashcardView(
     word: ParsedWord,
-    isRotated: Boolean,          // 상태를 외부에서 주입받음
-    onCardClick: () -> Unit,     // 클릭 이벤트도 외부로 전달
+    isRotated: Boolean,
+    onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val rotation by animateFloatAsState(
@@ -42,11 +42,11 @@ fun FlashcardView(
             .clickable { onCardClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
+        // Box의 모든 인자를 명시하여 Box$default 호출(기본값 생성)을 방지합니다.
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            contentAlignment = Alignment.Center,
+            propagateMinConstraints = false
         ) {
             if (rotation <= 90f) {
                 Text(
@@ -56,17 +56,17 @@ fun FlashcardView(
                 )
             } else {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            rotationY = 180f
-                        },
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                    propagateMinConstraints = false
                 ) {
                     Text(
                         text = word.meaning,
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.graphicsLayer {
+                            rotationY = 180f
+                        }
                     )
                 }
             }
