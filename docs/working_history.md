@@ -29,3 +29,5 @@
 ## [2026-10-15] Implemented CJK (Chinese, Japanese, Korean) support in ML Kit OCR: Switched from Latin-only to CJK text recognition to enable Korean character detection.
 
 ## [2026-10-15] Implemented CJK (Chinese, Japanese, Korean) support in ML Kit OCR: Switched from Latin-only to CJK text recognition to enable Korean character detection in table-structured images.
+
+## [2026-10-15] Resolved ML Kit compilation error by switching to Korean-specific OCR module: Replaced Latin-only/Chinese-based recognizer with KoreanTextRecognizerOptions to correctly support Hangul.

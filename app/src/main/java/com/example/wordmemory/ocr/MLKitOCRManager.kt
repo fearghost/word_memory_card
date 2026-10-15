@@ -4,12 +4,12 @@ import android.content.Context
 import android.net.Uri
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import kotlinx.coroutines.tasks.await
 
 // DEBUG: This is a test comment to verify CI code
 class MLKitOCRManager(private val context: Context) : OCRManager {
-    private val recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.DEFAULT_OPTIONS)
+    private val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
     override suspend fun processImage(imageUri: Uri): OCRResult {
         val originalBitmap = context.contentResolver.openInputStream(imageUri)?.use {
