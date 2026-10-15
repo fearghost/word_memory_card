@@ -8,3 +8,5 @@
 Updated com.google.mlkit:text-recognition and vision-common from 16.0.0 to 16.0.1 in app/build.gradle.kts to resolve artifact not found error.
 ## [2026-10-14] ML Kit AAR name mismatch error during dependency substitution
 Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substitution was causing a mismatch between the module name and the actual AAR filename. Using exclude ensures the GMS version is ignored while the bundled version is used.
+
+## [2026-10-15] Unexpected +/- setting in VM option 'MaxMetaspaceSize=512m' - Removed '+' prefix.

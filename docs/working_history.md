@@ -5,3 +5,5 @@
 - Identified that CI is still reporting `p0` parameter errors, suggesting GMS version is still being prioritized or cached incorrectly.
 ## [2026-10-14] Updated ML Kit dependency version to 16.0.1 to fix build error
 ## [2026-10-14] Fixed ML Kit dependency resolution error in app/build.gradle.kts
+
+## [2026-10-15] Fixed JVM option syntax error in gradle.properties to resolve OOM during Dexing.
