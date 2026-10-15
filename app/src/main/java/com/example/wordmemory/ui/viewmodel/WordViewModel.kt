@@ -33,6 +33,10 @@ class WordViewModel(
             for (uri in uris) {
                 try {
                     val result = ocrManager.processImage(uri)
+                    if (result.rawText.isBlank()) {
+                        _errorMessage.value = "OCR failed to detect any text in one of the images. Please ensure the photo is clear and well-lit."
+                        break
+                    }
                     val words = textParser.parse(result.rawText)
                     // Associate each extracted word with the current image URI
                     allWords.addAll(words.map { it.copy(imagePath = uri.toString()) })

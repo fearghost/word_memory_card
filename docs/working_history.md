@@ -13,3 +13,5 @@
 ## [2026-10-15] Fixed compilation error in WordRepository: Added missing imagePath parameter in updateWordsInBundle function to support image-based flashcard creation.
 
 ## [2026-10-15] Fixed OCR and Flashcard workflow: Replaced MockOCR with MLKitOCRManager and implemented actual word loading in StudyScreen via bundleId.
+
+## [2026-10-15] Implemented OCR auto-rotation retry logic and improved text parsing robustness: Added 0-270 degree rotation attempts in MLKitOCRManager and fallback parsing in TextParser to handle non-standard formats.
