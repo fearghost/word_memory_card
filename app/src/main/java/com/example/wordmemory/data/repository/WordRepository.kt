@@ -32,4 +32,11 @@ class WordRepository(private val wordDao: WordDao) {
     suspend fun deleteBundle(bundle: com.example.wordmemory.data.local.room.WordBundleEntity) {
         wordDao.deleteBundle(bundle)
     }
+
+    suspend fun getWordsByBundle(bundleId: Long): List<ParsedWord> {
+        val entities = wordDao.getItemsByBundle(bundleId)
+        return entities.map { 
+            ParsedWord(word = it.word, meaning = it.meaning, imagePath = it.imagePath) 
+        }
+    }
 }

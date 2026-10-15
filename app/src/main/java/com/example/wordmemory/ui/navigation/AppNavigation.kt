@@ -54,11 +54,10 @@ fun AppNavigation(
         }
         composable("study/{bundleId}") { backStackEntry ->
             val bundleId = backStackEntry.arguments?.getString("bundleId")?.toLong() ?: 0L
-            // In a real app, we'd fetch words from the repository here.
-            // For now, we pass empty list or handle it in the ViewModel.
             StudyScreen(
-                words = emptyList(), // Placeholder: should be loaded from DB
-                ttsManager = ttsManager, 
+                bundleId = bundleId,
+                repository = repository,
+                ttsManager = ttsManager,
                 onComplete = { navController.popBackStack() }
             )
         }

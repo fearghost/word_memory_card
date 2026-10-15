@@ -14,3 +14,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] Integrated OCR results with Bundle creation: Modified WordViewModel to associate image URIs with extracted ParsedWords, and updated NewBundleScreen to allow image selection and automatic parsing.
 
 ## [2026-10-15] Missing imagePath in WordRepository.kt: The updateWordsInBundle function was missing the imagePath argument when creating WordItemEntity, leading to a compilation error after adding image support.
+
+## [2026-10-15] OCR returning dummy data and empty flashcards: Found MockOCRManager being used in MainActivity and StudyScreen receiving empty list in AppNavigation. Fixed by injecting MLKitOCRManager and passing bundleId to StudyScreen to fetch data from repository.

@@ -9,26 +9,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
+import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.tts.TtsManager
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyScreen(
-    words: List<ParsedWord>,
+    bundleId: Long,
+    repository: WordRepository,
     ttsManager: TtsManager,
     onComplete: () -> Unit
 ) {
+    var words by remember { mutableStateOf<List<ParsedWord>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
     var currentIndex by remember { mutableIntStateOf(0) }
     var selectedLocale by remember { mutableStateOf(Locale.US) }
     var isRotated by remember { mutableStateOf(false) }
 
-    // Reset rotation when the card changes
+    LaunchedEffect(bundleId) {
+        words = repository.getWordsByBundle(bundleId)
+        isLoading = false
+    }
+
     LaunchedEffect(currentIndex) {
         isRotated = false
     }
 
-    if (words.isEmpty() || currentIndex >= words.size) {
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (words.isEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("No words in this bundle!", style = MaterialTheme.typography.headlineMedium)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onComplete) {
+                Text("Back to Home")
+            }
+        }
+    } else if (currentIndex >= words.size) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -57,8 +80,10 @@ fun StudyScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     listOf(Locale.US, Locale.UK, Locale.forLanguageTag("en-AU")).forEach { locale ->
-                        val label = when(locale.language) {
-                            "en" -> if (locale.country == "US") "US" else if (locale.country == "GB") "UK" else "AU"
+                        val label = when(locale.country) {
+                            "US" -> "US"
+                            "GB" -> "UK"
+                            "AU" -> "AU"
                             else -> locale.country
                         }
                         FilterChip(

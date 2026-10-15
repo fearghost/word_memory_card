@@ -12,7 +12,8 @@ import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.parser.TextParser
 import com.example.wordmemory.ui.navigation.AppNavigation
 import com.example.wordmemory.ui.viewmodel.WordViewModel
-import com.example.wordmemory.ocr.MockOCRManager
+import com.example.wordmemory.ocr.MLKitOCRManager
+import com.example.wordmemory.tts.AndroidTtsManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,9 +27,9 @@ class MainActivity : ComponentActivity() {
         
         val repository = WordRepository(db.wordDao())
         val parser = TextParser()
-        val mockOcrManager = MockOCRManager()
-        val viewModel = WordViewModel(mockOcrManager, parser)
-        val ttsManager = com.example.wordmemory.tts.AndroidTtsManager(this)
+        val mlkitOcrManager = MLKitOCRManager(this)
+        val viewModel = WordViewModel(mlkitOcrManager, parser)
+        val ttsManager = AndroidTtsManager(this)
 
         setContent {
             MaterialTheme {
