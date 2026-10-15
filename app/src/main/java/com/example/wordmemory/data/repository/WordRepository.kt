@@ -23,7 +23,7 @@ class WordRepository(private val wordDao: WordDao) {
     suspend fun updateWordsInBundle(bundleId: Long, words: List<ParsedWord>) {
         wordDao.deleteItemsByBundleId(bundleId)
         val entities = words.map { 
-            WordItemEntity(bundleId = bundleId, word = it.word, meaning = it.meaning) 
+            WordItemEntity(bundleId = bundleId, word = it.word, meaning = it.meaning, imagePath = it.imagePath) 
         }
         wordDao.insertItems(entities)
     }

@@ -9,3 +9,5 @@
 ## [2026-10-15] Fixed JVM option syntax error in gradle.properties to resolve OOM during Dexing.
 
 ## [2026-10-15] Implemented photo-to-bundle feature: Users can now select multiple images, perform OCR, and create a bundle containing the extracted words with their associated image paths.
+
+## [2026-10-15] Fixed compilation error in WordRepository: Added missing imagePath parameter in updateWordsInBundle function to support image-based flashcard creation.

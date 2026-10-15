@@ -12,3 +12,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] Unexpected +/- setting in VM option 'MaxMetaspaceSize=512m' - Removed '+' prefix.
 
 ## [2026-10-15] Integrated OCR results with Bundle creation: Modified WordViewModel to associate image URIs with extracted ParsedWords, and updated NewBundleScreen to allow image selection and automatic parsing.
+
+## [2026-10-15] Missing imagePath in WordRepository.kt: The updateWordsInBundle function was missing the imagePath argument when creating WordItemEntity, leading to a compilation error after adding image support.
