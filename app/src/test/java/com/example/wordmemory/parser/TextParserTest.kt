@@ -1,15 +1,19 @@
 package com.example.wordmemory.parser
 
 import com.example.wordmemory.domain.model.ParsedWord
+import io.mockk.mockk
+import android.content.Context
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TextParserTest {
 
-    private val parser = TextParser()
+    private val mockContext = mockk<Context>(relaxed = true)
+    private val parser = TextParser(mockContext, "dummy_key")
 
     @Test
-    fun `test parsing with explicit labels`() {
+    fun `test parsing with explicit labels`() = runTest {
         // 기본 라벨 기반 파싱 테스트
         val input = "Word: apple\nMeaning: 사과\nWord: banana\nMeaning: 바나나"
         val result = parser.parse(input)
@@ -21,7 +25,7 @@ class TextParserTest {
     }
 
     @Test
-    fun `test parsing with multiple items and repeating labels`() {
+    fun `test parsing with multiple items and repeating labels`() = runTest {
         // 라벨이 반복되는 구조의 다중 아이템 테스트
         val input = """
             Word: apple
@@ -42,7 +46,7 @@ class TextParserTest {
     }
 
     @Test
-    fun `test noise filtering with labels`() {
+    fun `test noise filtering with labels`() = runTest {
         // 라벨 사이에 잡음(예: 페이지 번호)이 섞여 있어도 단어/뜻만 정확히 추출하는지 테스트
         val input = """
             Word: apple
@@ -65,14 +69,14 @@ class TextParserTest {
     }
 
     @Test
-    fun `test empty input`() {
+    fun `test empty input`() = runTest {
         // 빈 입력에 대한 처리
         val result = parser.parse("")
         assertEquals(0, result.size)
     }
 
     @Test
-    fun `test ignoring text before first label`() {
+    fun `test ignoring text before first label`() = runTest {
         // 첫 번째 라벨이 나오기 전의 텍스트는 무시되는지 테스트
         val input = "Some random noise\nWord: apple\nMeaning: 사과"
         val result = parser.parse(input)

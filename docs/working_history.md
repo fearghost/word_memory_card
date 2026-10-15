@@ -47,3 +47,6 @@
 ## [2026-10-16] Implemented raw OCR text debugging view in NewBundleScreen to help diagnose alignment and recognition issues.
 
 ## [2026-10-16] Documented the Hybrid Semantic Matcher architecture in docs/architecture/semantic_matcher.md and linked it in .hermes.md.
+
+## [2026-10-16]
+Implemented the Hybrid Semantic Matcher (Local + Cloud LLM). This replaces the rule-based parsing with a tiered approach (TextCleaner -> LocalMatcher -> CloudLLMMatcher) for high-accuracy OCR word-meaning extraction.

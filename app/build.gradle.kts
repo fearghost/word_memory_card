@@ -63,7 +63,12 @@ dependencies {
     implementation("com.google.mlkit:text-recognition-korean:16.0.1")
     implementation("com.google.mlkit:vision-common:16.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    
+    // Testing & LLM
     testImplementation("junit:junit:4.13.2")
     testImplementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.8")
+    implementation("com.google.generativeai:generativeai:0.7.0")
 }
