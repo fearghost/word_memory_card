@@ -28,7 +28,7 @@ jobs:
       run: ./gradlew testDebugUnitTest
 
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --rerun-tasks
+      run: ./gradlew clean assembleDebug --no-daemon
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
