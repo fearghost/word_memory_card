@@ -17,3 +17,5 @@
 ## [2026-10-15] Implemented OCR auto-rotation retry logic and improved text parsing robustness: Added 0-270 degree rotation attempts in MLKitOCRManager and fallback parsing in TextParser to handle non-standard formats.
 
 ## [2026-10-15] Fixed syntax error in TextParser.kt and finalized OCR improvements: Resolved a compilation error caused by incorrect string escaping in the regex pattern and ensured rotation-robust OCR.
+
+## [2026-10-15] Fixed unit test failure in TextParserTest.kt: Resolved an AssertionError by aligning TextParser's fallback logic with the test's expectation to ignore invalid lines (lines without separators).

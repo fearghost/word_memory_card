@@ -20,3 +20,5 @@ Replaced dependencySubstitution with exclude in app/build.gradle.kts. The substi
 ## [2026-10-15] OCR failed on rotated images or non-standard formats: Implemented automatic rotation attempts (0, 90, 180, 270) in MLKitOCRManager and updated TextParser to return words without meanings as a fallback.
 
 ## [2026-10-15] Syntax Error (Expecting expression/closing parenthesis) in TextParser.kt: Fixed an issue where incorrect escaping of triple quotes caused a compilation failure in the TextParser regex definition.
+
+## [2026-10-15] AssertionError in TextParserTest.kt: Fixed mismatch between TextParser's fallback behavior (including invalid lines) and the test's expectation (ignoring invalid lines).

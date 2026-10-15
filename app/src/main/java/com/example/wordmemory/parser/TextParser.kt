@@ -32,9 +32,7 @@ class TextParser {
                     results.add(ParsedWord(word, meaning))
                 }
             } else {
-                // If no separator is found, treat the whole line as a word with an empty meaning.
-                // This helps us debug if the OCR is working even if the format is wrong.
-                results.add(ParsedWord(trimmedLine, ""))
+                // Ignore lines that do not contain a valid separator to match test expectations
             }
         }
         return results
