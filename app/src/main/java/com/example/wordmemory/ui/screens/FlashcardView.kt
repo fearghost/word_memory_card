@@ -3,8 +3,14 @@ package com.example.wordmemory.ui.screens
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +28,7 @@ fun FlashcardView(
     modifier: Modifier = Modifier
 ) {
     var rotated by remember { mutableStateOf(false) }
+
     val rotation by animateFloatAsState(
         targetValue = if (rotated) 180f else 0f,
         animationSpec = tween(durationMillis = 600),
@@ -30,15 +37,18 @@ fun FlashcardView(
 
     Card(
         modifier = modifier
-            .size(width = 320.dp, height = 220.dp)
-            .graphicsLayer(rotationZ = rotation.toFloat())
+            .size(320.dp, 220.dp)
+            .graphicsLayer {
+                rotationY = rotation
+                cameraDistance = 8f * density
+            }
             .clickable { rotated = !rotated },
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             if (rotation <= 90f) {
@@ -48,12 +58,20 @@ fun FlashcardView(
                     color = MaterialTheme.colorScheme.primary
                 )
             } else {
-                Text(
-                    text = word.meaning,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.graphicsLayer(rotationZ = 180f),
-                    color = MaterialTheme.colorScheme.secondary
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            rotationY = 180f
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = word.meaning,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
         }
     }
