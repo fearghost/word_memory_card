@@ -97,3 +97,7 @@ Fix: Added DictionaryEntity::class to the @Database entities list and imported t
 ## [2026-10-16] TextParser noise filtering bug
 - Issue: `test noise filtering with labels` failed because `TextCleaner.tokenize` included non-labeled lines (noise) in the English token pool after the first label was encountered.
 - Fix: Refactored `TextCleaner.tokenize` to only include lines that explicitly contain "Word" or "Meaning" labels, ensuring noise is correctly ignored.
+## [2026-10-16] Patch failure in build.gradle.kts
+- Issue: The initial patch for app/build.gradle.kts failed due to complex string escaping in the DSL.
+- Resolution: Rewrote the entire file using write_file to ensure correct syntax and proper handling of the geminiKey logic.
+

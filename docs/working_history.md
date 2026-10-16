@@ -82,3 +82,18 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 ## [2026-10-16] Fixed TextParser unit test failure (noise filtering)
 - Resolved `test noise filtering with labels` failure in `TextParserTest.kt`.
 - Fixed `TextCleaner.tokenize` to only process lines that explicitly contain "Word" or "Meaning" labels, preventing noise (like "Page 2") from being incorrectly identified as English words.
+
+## [2026-10-16] Secure Gemini API Key Integration Plan
+- **Problem:** API key is hardcoded as `"YOUR_GEMINI_API_KEY"` in `MainActivity.kt`, causing silent failures in Cloud Matcher.
+- **Strategy:** Implement GitHub Secrets $ightarrow$ Gradle $ightarrow$ BuildConfig injection to keep the key out of the source code.
+- **Next Steps:**
+    1. Update `app/build.gradle.kts` to inject `GEMINI_API_KEY` into `BuildConfig`.
+    2. Update `app/src/main/java/com/example/wordmemory/ui/MainActivity.kt` to use `BuildConfig.GEMINI_API_KEY`.
+    3. Update `.github/workflows/*.yml` to pass the `GEMINI_API_KEY` from GitHub Secrets to the Gradle build process.
+
+## [2026-10-16] Secure Gemini API Key Integration
+- Implemented secure Gemini API Key integration using GitHub Secrets, BuildConfig, and CI/CD injection.
+- Updated app/build.gradle.kts to read GEMINI_API_KEY from environment variables.
+- Updated MainActivity.kt to use BuildConfig.GEMINI_API_KEY.
+- Updated .github/workflows/android_ci.yml to pass GEMINI_API_KEY from GitHub Secrets.
+

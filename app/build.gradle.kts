@@ -15,6 +15,9 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        val geminiKey = System.getenv("GEMINI_API_KEY")?.let { ""$it"" } ?: ""YOUR_GEMINI_API_KEY""
+        buildConfigField("String", "GEMINI_API_KEY", geminiKey)
     }
 
     buildTypes {
@@ -25,6 +28,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {

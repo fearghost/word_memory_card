@@ -18,12 +18,6 @@ class TextCleaner {
         Regex("(?i)number\\s*\\d+"),
     )
 
-    // Patterns for labels to strip during tokenization
-    private val labelPatterns = listOf(
-        Regex("(?i)word[:\\s]*"),
-        Regex("(?i)meaning[:\\s]*")
-    )
-
     /**
      * Removes identified noise patterns from the raw text.
      */
@@ -37,6 +31,7 @@ class TextCleaner {
 
     /**
      * Splits the cleaned text into two pools: English words and Korean meanings.
+     * Uses a "Bag-of-Words" approach to be robust against OCR noise and label corruption.
      * 
      * @param cleanedText The text after noise removal.
      * @return A Pair containing (List of English tokens, List of Korean tokens).
@@ -45,36 +40,26 @@ class TextCleaner {
         val englishTokens = mutableListOf<String>()
         val koreanTokens = mutableListOf<String>()
 
-        val lines = cleanedText.lines()
+        // Split by whitespace to get initial candidates
+        val rawTokens = cleanedText.split(Regex("\\s+"))
 
-        for (line in lines) {
-            var trimmed = line.trim()
-            if (trimmed.isEmpty()) continue
+        for (token in rawTokens) {
+            // Remove all non-alphanumeric characters (punctuation, etc.)
+            // \p{L} matches any Unicode letter, \p{N} matches any Unicode number
+            val cleanedToken = token.replace(Regex("[^\\p{L}\\p{N}]"), "")
+            
+            if (cleanedToken.isEmpty()) continue
 
-            // Check if this line contains a label
-            val hasWordLabel = trimmed.contains("Word", ignoreCase = true)
-            val hasMeaningLabel = trimmed.contains("Meaning", ignoreCase = true)
-
-            if (hasWordLabel || hasMeaningLabel) {
-                // Strip labels (Word/Meaning) from the line
-                for (pattern in labelPatterns) {
-                    trimmed = trimmed.replace(pattern, "").trim()
-                }
-
-                if (trimmed.isEmpty()) continue
-
-                val hasHangul = hangulRegex.find(trimmed) != null
-                
-                if (hasHangul) {
-                    koreanTokens.add(trimmed)
-                } else {
-                    // Only add to words if it's not empty and has a reasonable length
-                    if (trimmed.length >= 2) {
-                        englishTokens.add(trimmed)
-                    }
+            val hasHangul = hangulRegex.find(cleanedToken) != null
+            
+            if (hasHangul) {
+                koreanTokens.add(cleanedToken)
+            } else {
+                // Only add to words if it's not empty and has a reasonable length
+                if (cleanedToken.length >= 2) {
+                    englishTokens.add(cleanedToken)
                 }
             }
-            // If no label is present, the line is treated as noise and skipped.
         }
 
         return Pair(englishTokens, koreanTokens)

@@ -17,6 +17,7 @@ import com.example.wordmemory.tts.AndroidTtsManager
 import com.example.wordmemory.api.GeminiCloudLLMClient
 import com.example.wordmemory.data.local.room.dictionary.DictionaryRepository
 import com.example.wordmemory.parser.CloudLLMMatcher
+import com.example.wordmemory.BuildConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
         
         val repository = WordRepository(db.wordDao())
         val dictionaryRepository = DictionaryRepository(db.dictionaryDao())
-        val cloudMatcher = CloudLLMMatcher(GeminiCloudLLMClient("YOUR_GEMINI_API_KEY"))
+        val cloudMatcher = CloudLLMMatcher(GeminiCloudLLMClient(BuildConfig.GEMINI_API_KEY))
         val parser = TextParser(dictionaryRepository, cloudMatcher)
         val mlkitOcrManager = MLKitOCRManager(this)
         val viewModel = WordViewModel(mlkitOcrManager, parser)
