@@ -74,3 +74,7 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 - Fixed Deprecated `VolumeUp` icon by using `Icons.AutoMirrored.Filled.VolumeUp`.
 - Removed unused parameters in `HomeScreen`, `ReviewEditScreen`, and `ParsingScreen`.
 - Fixed `TextParserTest` failures by implementing "ignore until first label" logic in `TextCleaner.tokenize` and properly configuring `coEvery` mocks for `DictionaryRepository` and `CloudLLMMatcher`.
+
+## [2026-10-16] Fixed AppNavigation.kt call sites to match updated screen signatures
+- Corrected HomeScreen call in AppNavigation.kt by removing the unused viewModel parameter.
+- Corrected ReviewEditScreen call in AppNavigation.kt by removing the unused bundleId parameter.

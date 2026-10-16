@@ -26,7 +26,6 @@ fun AppNavigation(
         composable("home") { 
             HomeScreen(
                 repository = repository,
-                viewModel = viewModel,
                 onNavigateToNewBundle = { navController.navigate("new_bundle") },
                 onNavigateToStudy = { bundleId -> navController.navigate("study/$bundleId") },
                 onNavigateToEdit = { bundleId -> navController.navigate("review_edit/$bundleId") }
@@ -38,7 +37,6 @@ fun AppNavigation(
         composable("review_edit/{bundleId}") { backStackEntry ->
             val bundleId = backStackEntry.arguments?.getString("bundleId")?.toLong() ?: 0L
             ReviewEditScreen(
-                bundleId = bundleId,
                 viewModel = viewModel,
                 onSave = { viewModel.saveWordsToBundle(bundleId, it, repository) },
                 onCancel = { navController.popBackStack() }

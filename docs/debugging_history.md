@@ -89,3 +89,7 @@ Fix: Added DictionaryEntity::class to the @Database entities list and imported t
 - Fix: Updated `TextCleaner.tokenize` to skip lines until a label is found and added `coEvery` to the test mocks.
 - Issue: UI build warnings due to deprecated icons and unused parameters.
 - Fix: Updated `VolumeUp` icon and removed unused parameters from screen components.
+
+## [2026-10-16] Compilation errors in AppNavigation.kt
+- Issue: Compilation error in AppNavigation.kt due to mismatch between screen composable signatures and their call sites after removing unused parameters.
+- Fix: Updated AppNavigation.kt to remove the 'viewModel' parameter from HomeScreen call and 'bundleId' parameter from ReviewEditScreen call.
