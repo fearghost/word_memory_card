@@ -46,10 +46,21 @@ class TextCleaner {
         val koreanTokens = mutableListOf<String>()
 
         val lines = cleanedText.lines()
+        var foundFirstLabel = false
 
         for (line in lines) {
             var trimmed = line.trim()
             if (trimmed.isEmpty()) continue
+
+            // Check if this line contains a label before stripping it
+            val hasWordLabel = trimmed.contains("Word", ignoreCase = true)
+            val hasMeaningLabel = trimmed.contains("Meaning", ignoreCase = true)
+
+            if (hasWordLabel || hasMeaningLabel) {
+                foundFirstLabel = true
+            }
+
+            if (!foundFirstLabel) continue
 
             // Strip labels (Word/Meaning) from the line before classifying
             for (pattern in labelPatterns) {

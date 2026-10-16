@@ -2,7 +2,7 @@ package com.example.wordmemory.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -111,7 +111,7 @@ fun StudyScreen(
                     onClick = { ttsManager.speak(words[currentIndex].word) },
                     modifier = Modifier.align(Alignment.BottomEnd)
                 ) {
-                    Icon(Icons.Default.VolumeUp, contentDescription = "Listen")
+                    Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = "Listen")
                 }
             }
 

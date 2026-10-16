@@ -70,3 +70,7 @@ Resolved Unresolved Reference errors in MainActivity.kt by adding missing import
 Added dictionaryDao() to AppDatabase to resolve Unresolved reference in MainActivity.kt.
 ## [2026-10-16]
 Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilation error.
+## [2026-10-16] Fixed UI build warnings and unit test failures in TextParser
+- Fixed Deprecated `VolumeUp` icon by using `Icons.AutoMirrored.Filled.VolumeUp`.
+- Removed unused parameters in `HomeScreen`, `ReviewEditScreen`, and `ParsingScreen`.
+- Fixed `TextParserTest` failures by implementing "ignore until first label" logic in `TextCleaner.tokenize` and properly configuring `coEvery` mocks for `DictionaryRepository` and `CloudLLMMatcher`.

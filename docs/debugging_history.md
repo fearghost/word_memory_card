@@ -84,3 +84,8 @@ Fix: Added abstract fun dictionaryDao(): DictionaryDao to AppDatabase and import
 ## [2026-10-16] Room KSP Error: DictionaryEntity not found in @Database
 Issue: DictionaryEntity was not registered in the AppDatabase entities array, causing KSP to fail during compilation.
 Fix: Added DictionaryEntity::class to the @Database entities list and imported the class.
+## [2026-10-16] TextParser unit tests and UI build warnings
+- Issue: `TextParserTest` failed due to incorrect noise handling (not ignoring text before the first label) and unconfigured mocks returning empty lists.
+- Fix: Updated `TextCleaner.tokenize` to skip lines until a label is found and added `coEvery` to the test mocks.
+- Issue: UI build warnings due to deprecated icons and unused parameters.
+- Fix: Updated `VolumeUp` icon and removed unused parameters from screen components.

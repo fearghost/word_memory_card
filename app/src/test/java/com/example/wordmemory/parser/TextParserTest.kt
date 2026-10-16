@@ -2,6 +2,7 @@ package com.example.wordmemory.parser
 
 import com.example.wordmemory.domain.model.ParsedWord
 import com.example.wordmemory.data.local.room.dictionary.DictionaryRepository
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -15,9 +16,14 @@ class TextParserTest {
 
     @Test
     fun `test parsing with explicit labels`() = runTest {
-        // 기본 라벨 기반 파싱 테스트
+        // Configure mocks
+        coEvery { mockDictionaryRepository.getMeaning("apple") } returns "사과"
+        coEvery { mockDictionaryRepository.getMeaning("banana") } returns "바나나"
+        coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList() // Local matcher should handle it
+
         val input = "Word: apple\nMeaning: 사과\nWord: banana\nMeaning: 바나나"
         val result = parser.parse(input)
+        
         assertEquals(2, result.size)
         assertEquals("apple", result[0].word)
         assertEquals("사과", result[0].meaning)
@@ -27,7 +33,11 @@ class TextParserTest {
 
     @Test
     fun `test parsing with multiple items and repeating labels`() = runTest {
-        // 라벨이 반복되는 구조의 다중 아이템 테스트
+        coEvery { mockDictionaryRepository.getMeaning("apple") } returns "사과"
+        coEvery { mockDictionaryRepository.getMeaning("banana") } returns "바나나"
+        coEvery { mockDictionaryRepository.getMeaning("orange") } returns "오렌지"
+        coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
+
         val input = """
             Word: apple
             Meaning: 사과
@@ -37,6 +47,7 @@ class TextParserTest {
             Meaning: 오렌지
         """.trimIndent()
         val result = parser.parse(input)
+        
         assertEquals(3, result.size)
         assertEquals("apple", result[0].word)
         assertEquals("사과", result[0].meaning)
@@ -48,7 +59,11 @@ class TextParserTest {
 
     @Test
     fun `test noise filtering with labels`() = runTest {
-        // 라벨 사이에 잡음(예: 페이지 번호)이 섞여 있어도 단어/뜻만 정확히 추출하는지 테스트
+        coEvery { mockDictionaryRepository.getMeaning("apple") } returns "사과"
+        coEvery { mockDictionaryRepository.getMeaning("banana") } returns "바나나"
+        coEvery { mockDictionaryRepository.getMeaning("orange") } returns "오렌지"
+        coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
+
         val input = """
             Word: apple
             Meaning: 사과
@@ -60,6 +75,7 @@ class TextParserTest {
             Meaning: 오렌지
         """.trimIndent()
         val result = parser.parse(input)
+        
         assertEquals(3, result.size)
         assertEquals("apple", result[0].word)
         assertEquals("사과", result[0].meaning)
@@ -71,16 +87,21 @@ class TextParserTest {
 
     @Test
     fun `test empty input`() = runTest {
-        // 빈 입력에 대한 처리
         val result = parser.parse("")
         assertEquals(0, result.size)
     }
 
     @Test
     fun `test ignoring text before first label`() = runTest {
-        // 첫 번째 라벨이 나오기 전의 텍스트는 무시되는지 테스트
+        // Cloud matcher fallback
+        coEvery { mockDictionaryRepository.getMeaning(any()) } returns null
+        coEvery { mockCloudMatcher.match(any(), any()) } returns listOf(
+            ParsedWord("apple", "사과")
+        )
+
         val input = "Some random noise\nWord: apple\nMeaning: 사과"
         val result = parser.parse(input)
+        
         assertEquals(1, result.size)
         assertEquals("apple", result[0].word)
         assertEquals("사과", result[0].meaning)

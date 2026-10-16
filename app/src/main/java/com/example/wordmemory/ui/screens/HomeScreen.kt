@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     repository: WordRepository,
-    viewModel: WordViewModel,
     onNavigateToNewBundle: () -> Unit,
     onNavigateToStudy: (Long) -> Unit,
     onNavigateToEdit: (Long) -> Unit

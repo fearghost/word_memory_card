@@ -18,7 +18,6 @@ fun ParsingScreen(viewModel: WordViewModel) {
     val isProcessing by viewModel.isProcessing.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(errorMessage) {
         errorMessage?.let {

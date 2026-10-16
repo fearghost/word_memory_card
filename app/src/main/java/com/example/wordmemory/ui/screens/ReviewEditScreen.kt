@@ -12,7 +12,6 @@ import com.example.wordmemory.ui.viewmodel.WordViewModel
 
 @Composable
 fun ReviewEditScreen(
-    bundleId: Long,
     viewModel: WordViewModel,
     onSave: (List<ParsedWord>) -> Unit,
     onCancel: () -> Unit
@@ -21,7 +20,7 @@ fun ReviewEditScreen(
     
     // Local state to hold the edited words
     var editableWords by remember { mutableStateOf(parsedWords) }
-
+    
     // Update local state when parsedWords changes (e.g. when entering screen)
     LaunchedEffect(parsedWords) {
         editableWords = parsedWords
