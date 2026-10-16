@@ -1,8 +1,8 @@
 package com.example.wordmemory.api
 
 import com.example.wordmemory.domain.model.ParsedWord
-import com.google.generativeai.generativeai.GenerativeModel
-import com.google.generativeai.type.content
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
