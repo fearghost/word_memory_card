@@ -72,3 +72,6 @@ Fix: Updated imports in GeminiCloudLLMClient.kt to use com.google.ai.client.gene
 ## [2026-10-16] JVM Target Mismatch Error
 Issue: Cannot inline bytecode built with JVM target 11 into bytecode built with 1.8.
 Fix: Updated app/build.gradle.kts to use JavaVersion.VERSION_11 for compileOptions and jvmTarget = '11' for kotlinOptions.
+## [2026-10-16] RuntimeException at Looper.java (Unit Test Failure)
+Issue: TextParser used Android Context, causing Looper error in JVM-based local unit tests.
+Fix: Refactored TextParser to use Dependency Injection (Repository and Matcher) instead of Context, making it pure Kotlin.

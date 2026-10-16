@@ -62,3 +62,5 @@ Fixed dependency issues in app/build.gradle.kts by adding Kotlinx Serialization 
 Finalized GeminiCloudLLMClient.kt by correcting the package imports from com.google.generativeai to com.google.ai.client.generativeai.
 ## [2026-10-16]
 Resolved JVM target mismatch in app/build.gradle.kts by upgrading compileOptions and kotlinOptions to target Java 11.
+## [2026-10-16]
+Refactored TextParser to be a pure Kotlin class by injecting DictionaryRepository and CloudLLMMatcher, removing Android Context dependency for unit testing.

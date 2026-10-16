@@ -26,8 +26,9 @@ class MainActivity : ComponentActivity() {
         ).build()
         
         val repository = WordRepository(db.wordDao())
-        // IMPORTANT: Replace "YOUR_GEMINI_API_KEY" with your actual API key from Google AI Studio
-        val parser = TextParser(applicationContext, "YOUR_GEMINI_API_KEY")
+        val dictionaryRepository = DictionaryRepository(db.dictionaryDao())
+        val cloudMatcher = CloudLLMMatcher(GeminiCloudLLMClient("YOUR_GEMINI_API_KEY"))
+        val parser = TextParser(dictionaryRepository, cloudMatcher)
         val mlkitOcrManager = MLKitOCRManager(this)
         val viewModel = WordViewModel(mlkitOcrManager, parser)
         val ttsManager = AndroidTtsManager(this)

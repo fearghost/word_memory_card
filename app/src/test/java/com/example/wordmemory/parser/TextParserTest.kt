@@ -1,16 +1,17 @@
 package com.example.wordmemory.parser
 
 import com.example.wordmemory.domain.model.ParsedWord
+import com.example.wordmemory.data.local.room.dictionary.DictionaryRepository
 import io.mockk.mockk
-import android.content.Context
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TextParserTest {
 
-    private val mockContext = mockk<Context>(relaxed = true)
-    private val parser = TextParser(mockContext, "dummy_key")
+    private val mockDictionaryRepository = mockk<DictionaryRepository>(relaxed = true)
+    private val mockCloudMatcher = mockk<CloudLLMMatcher>(relaxed = true)
+    private val parser = TextParser(mockDictionaryRepository, mockCloudMatcher)
 
     @Test
     fun `test parsing with explicit labels`() = runTest {

@@ -1,8 +1,6 @@
 package com.example.wordmemory.parser
 
-import android.content.Context
-import com.example.wordmemory.api.GeminiCloudLLMClient
-import com.example.wordmemory.data.local.room.dictionary.DictionaryDatabase
+import com.example.wordmemory.api.CloudLLMClient
 import com.example.wordmemory.data.local.room.dictionary.DictionaryRepository
 import com.example.wordmemory.domain.model.ParsedWord
 
@@ -13,16 +11,12 @@ import com.example.wordmemory.domain.model.ParsedWord
  * It orchestrates the Cleaner, Local Matcher, and Cloud Matcher.
  */
 class TextParser(
-    private val context: Context,
-    private val apiKey: String
+    private val dictionaryRepository: DictionaryRepository,
+    private val cloudMatcher: CloudLLMMatcher
 ) {
 
     private val cleaner = TextCleaner()
-    private val dictionaryRepository = DictionaryRepository(
-        DictionaryDatabase.getDatabase(context).dictionaryDao()
-    )
     private val localMatcher = LocalDictionaryMatcher(dictionaryRepository)
-    private val cloudMatcher = CloudLLMMatcher(GeminiCloudLLMClient(apiKey))
     private val hybridMatcher = HybridSemanticMatcher(localMatcher, cloudMatcher)
 
     /**
