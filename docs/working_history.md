@@ -66,3 +66,5 @@ Resolved JVM target mismatch in app/build.gradle.kts by upgrading compileOptions
 Refactored TextParser to be a pure Kotlin class by injecting DictionaryRepository and CloudLLMMatcher, removing Android Context dependency for unit testing.
 ## [2026-10-16]
 Resolved Unresolved Reference errors in MainActivity.kt by adding missing imports for DictionaryRepository, CloudLLMMatcher, and GeminiCloudLLMClient.
+## [2026-10-16]
+Added dictionaryDao() to AppDatabase to resolve Unresolved reference in MainActivity.kt.

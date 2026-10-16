@@ -78,3 +78,6 @@ Fix: Refactored TextParser to use Dependency Injection (Repository and Matcher) 
 ## [2026-10-16] Unresolved Reference in MainActivity.kt
 Issue: Compilation failed due to missing imports for DictionaryRepository, CloudLLMMatcher, and GeminiCloudLLMClient.
 Fix: Added correct import statements to MainActivity.kt.
+## [2026-10-16] Unresolved reference: dictionaryDao in MainActivity.kt
+Issue: AppDatabase did not define dictionaryDao(), causing compilation error in MainActivity.
+Fix: Added abstract fun dictionaryDao(): DictionaryDao to AppDatabase and imported DictionaryDao.
