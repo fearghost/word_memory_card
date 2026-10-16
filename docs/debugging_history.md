@@ -75,3 +75,6 @@ Fix: Updated app/build.gradle.kts to use JavaVersion.VERSION_11 for compileOptio
 ## [2026-10-16] RuntimeException at Looper.java (Unit Test Failure)
 Issue: TextParser used Android Context, causing Looper error in JVM-based local unit tests.
 Fix: Refactored TextParser to use Dependency Injection (Repository and Matcher) instead of Context, making it pure Kotlin.
+## [2026-10-16] Unresolved Reference in MainActivity.kt
+Issue: Compilation failed due to missing imports for DictionaryRepository, CloudLLMMatcher, and GeminiCloudLLMClient.
+Fix: Added correct import statements to MainActivity.kt.

@@ -14,6 +14,9 @@ import com.example.wordmemory.ui.navigation.AppNavigation
 import com.example.wordmemory.ui.viewmodel.WordViewModel
 import com.example.wordmemory.ocr.MLKitOCRManager
 import com.example.wordmemory.tts.AndroidTtsManager
+import com.example.wordmemory.api.GeminiCloudLLMClient
+import com.example.wordmemory.data.local.room.dictionary.DictionaryRepository
+import com.example.wordmemory.parser.CloudLLMMatcher
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
