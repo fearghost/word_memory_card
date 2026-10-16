@@ -81,3 +81,6 @@ Fix: Added correct import statements to MainActivity.kt.
 ## [2026-10-16] Unresolved reference: dictionaryDao in MainActivity.kt
 Issue: AppDatabase did not define dictionaryDao(), causing compilation error in MainActivity.
 Fix: Added abstract fun dictionaryDao(): DictionaryDao to AppDatabase and imported DictionaryDao.
+## [2026-10-16] Room KSP Error: DictionaryEntity not found in @Database
+Issue: DictionaryEntity was not registered in the AppDatabase entities array, causing KSP to fail during compilation.
+Fix: Added DictionaryEntity::class to the @Database entities list and imported the class.

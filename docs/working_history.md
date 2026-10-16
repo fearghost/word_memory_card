@@ -68,3 +68,5 @@ Refactored TextParser to be a pure Kotlin class by injecting DictionaryRepositor
 Resolved Unresolved Reference errors in MainActivity.kt by adding missing imports for DictionaryRepository, CloudLLMMatcher, and GeminiCloudLLMClient.
 ## [2026-10-16]
 Added dictionaryDao() to AppDatabase to resolve Unresolved reference in MainActivity.kt.
+## [2026-10-16]
+Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilation error.
