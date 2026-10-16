@@ -24,11 +24,10 @@ class LocalDictionaryMatcher(
             // 1. Check if this English word has a meaning in our local dictionary
             val dictionaryMeaning = dictionaryRepository.getMeaning(englishWord)
             
-            if (dictionaryMeaning != null) {
-                // 2. Check if the dictionary meaning (or a close version of it) 
-                // exists in the OCR's Korean meanings list.
-                // For Phase 2, we'll do a simple exact/contains match.
-                val matchInOCR = koreanMeanings.find { it.contains(dictionaryMeaning, ignoreCase = true) }
+            if (dictionaryMeaning != null && dictionaryMeaning.length >= 2) {
+                // 2. Check if the dictionary meaning exists in the OCR's Korean meanings list.
+                // Use exact match to prevent loose "contains" matching which causes false positives.
+                val matchInOCR = koreanMeanings.find { it == dictionaryMeaning }
                 
                 if (matchInOCR != null) {
                     matchedPairs.add(ParsedWord(englishWord, matchInOCR))
