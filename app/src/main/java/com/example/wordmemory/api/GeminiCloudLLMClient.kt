@@ -55,10 +55,9 @@ class GeminiCloudLLMClient(
             val response = model.generateContent(prompt)
             val responseText = response.text ?: ""
             
-            // Clean the response text in case the LLM includes markdown code fences (```json ... ```)
-            val cleanedJson = responseText.substringAfter("```json").substringBefore("```").trim()
-                .let { if (it == responseText) responseText else it }
-                .trim()
+            // Extract the JSON array using Regex to handle cases where the LLM adds conversational text
+            val jsonRegex = Regex("\\[[\\s\\S]*\\]")
+            val cleanedJson = jsonRegex.find(responseText)?.value ?: responseText
 
             parseJsonResponse(cleanedJson)
         } catch (e: Exception) {
