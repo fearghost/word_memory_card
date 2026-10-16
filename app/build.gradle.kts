@@ -83,4 +83,4 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.8")
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-}
+        val geminiKey = System.getenv("GEMINI_API_KEY")?.let { "\"$it\"" } ?: "\"YOUR_GEMINI_API_KEY\""
