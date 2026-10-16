@@ -104,3 +104,6 @@ Fix: Added DictionaryEntity::class to the @Database entities list and imported t
 
 ## [2026-10-16] TextParserTest.kt AssertionError due to updated TextParser logic (noise filtering/labeling).
 Resolution: Updated test expectations to match current parser output.
+
+## [2026-10-16] TextParserTest.kt AssertionError due to updated TextParser logic (noise filtering/labeling).
+Resolution: Updated test expectations to match current parser output.
