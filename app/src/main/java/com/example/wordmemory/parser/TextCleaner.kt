@@ -40,18 +40,14 @@ class TextCleaner {
         val englishTokens = mutableListOf<String>()
         val koreanTokens = mutableListOf<String>()
 
-        // Split by whitespace to get initial candidates
-        val rawTokens = cleanedText.split(Regex("\\s+"))
+        // Split by any non-alphanumeric character to separate words and handle punctuation-joined tokens (e.g., "apple:사과")
+        val rawTokens = cleanedText.split(Regex("[^\\p{L}\\p{N}]+"))
 
         for (token in rawTokens) {
-            // Remove all non-alphanumeric characters (punctuation, etc.)
-            // \p{L} matches any Unicode letter, \p{N} matches any Unicode number
-            val cleanedToken = token.replace(Regex("[^\\p{L}\\p{N}]"), "")
-            
-            if (cleanedToken.isEmpty()) continue
+            if (token.isEmpty()) continue
 
-            val englishPart = cleanedToken.replace(hangulRegex, "")
-            val hangulPart = cleanedToken.filter { hangulRegex.matches(it.toString()) }
+            val englishPart = token.replace(hangulRegex, "")
+            val hangulPart = token.filter { hangulRegex.matches(it.toString()) }
 
             if (englishPart.length >= 2) {
                 englishTokens.add(englishPart)

@@ -17,17 +17,15 @@ class LocalDictionaryMatcher(
     ): List<ParsedWord> {
         val matchedPairs = mutableListOf<ParsedWord>()
 
-        // In this Phase 2 implementation, we try to find a match for each English word 
-        // in the Korean meanings list using the local dictionary.
-        
         for (englishWord in englishWords) {
             // 1. Check if this English word has a meaning in our local dictionary
             val dictionaryMeaning = dictionaryRepository.getMeaning(englishWord)
             
             if (dictionaryMeaning != null && dictionaryMeaning.length >= 2) {
                 // 2. Check if the dictionary meaning exists in the OCR's Korean meanings list.
-                // Use exact match to prevent loose "contains" matching which causes false positives.
-                val matchInOCR = koreanMeanings.find { it == dictionaryMeaning }
+                // We use a slightly more flexible "contains" match to handle OCR noise,
+                // but we require the dictionary meaning to be at least 2 characters to avoid false positives.
+                val matchInOCR = koreanMeanings.find { it.contains(dictionaryMeaning, ignoreCase = true) }
                 
                 if (matchInOCR != null) {
                     matchedPairs.add(ParsedWord(englishWord, matchInOCR))
