@@ -97,3 +97,5 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 - Updated MainActivity.kt to use BuildConfig.GEMINI_API_KEY.
 - Updated .github/workflows/android_ci.yml to pass GEMINI_API_KEY from GitHub Secrets.
 
+
+## [2026-10-16] Fixed TextParserTest.kt to match the updated TextParser logic, resolving AssertionError in CI.
