@@ -39,7 +39,7 @@ class GeminiCloudLLMClient(
             1. Only match words that have a clear semantic connection.
             2. If a word cannot be matched, do not include it in the output.
             3. Return ONLY a valid JSON array of objects. Each object must have "word" and "meaning" keys.
-            4. Do not include any conversational text or explanation.
+            4. Do not include any conversational text, markdown fences, or explanation.
 
             English words: ${englishWords.joinToString(", ")}
             Korean meanings: ${koreanMeanings.joinToString(", ")}
@@ -51,18 +51,22 @@ class GeminiCloudLLMClient(
             ]
         """.trimIndent()
 
+        // Debug logging
+        android.util.Log.d("GeminiCloudLLMClient", "Sending Prompt: $prompt")
+
         return try {
             val response = model.generateContent(prompt)
             val responseText = response.text ?: ""
             
+            android.util.Log.d("GeminiCloudLLMClient", "Received Response: $responseText")
+
             // Extract the JSON array using Regex to handle cases where the LLM adds conversational text
             val jsonRegex = Regex("\\[[\\s\\S]*\\]")
             val cleanedJson = jsonRegex.find(responseText)?.value ?: responseText
 
             parseJsonResponse(cleanedJson)
         } catch (e: Exception) {
-            // In a real app, we would log this error properly.
-            // For now, we return an empty list to prevent the app from crashing.
+            android.util.Log.e("GeminiCloudLLMClient", "Error during match: ${e.message}")
             emptyList()
         }
     }
