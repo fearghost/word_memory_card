@@ -101,3 +101,5 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 ## [2026-10-16] Fixed TextParserTest.kt to match the updated TextParser logic, resolving AssertionError in CI.
 
 ## [2026-10-16] Fixed TextParserTest.kt to match the updated TextParser logic, resolving AssertionError in CI.
+
+## [2026-10-16] Replaced TextParserTest with a diagnostic version (no labels) to isolate the cause of persistent AssertionErrors.
