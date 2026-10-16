@@ -16,13 +16,12 @@ class TextParserTest {
 
     @Test
     fun `test parsing with explicit labels`() = runTest {
-        // Configure mocks
         coEvery { mockDictionaryRepository.getMeaning("apple") } returns "사과"
         coEvery { mockDictionaryRepository.getMeaning("banana") } returns "바나나"
-        coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList() // Local matcher should handle it
+        coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
 
         val input = "Word: apple\nMeaning: 사과\nWord: banana\nMeaning: 바나나"
-        val result = parser.parse(input)
+        val result = parser.parse(input.replace("\\n", "\n"))
         
         assertEquals(2, result.size)
         assertEquals("apple", result[0].word)
@@ -93,14 +92,13 @@ class TextParserTest {
 
     @Test
     fun `test ignoring text before first label`() = runTest {
-        // Cloud matcher fallback
         coEvery { mockDictionaryRepository.getMeaning(any()) } returns null
         coEvery { mockCloudMatcher.match(any(), any()) } returns listOf(
             ParsedWord("apple", "사과")
         )
 
         val input = "Some random noise\nWord: apple\nMeaning: 사과"
-        val result = parser.parse(input)
+        val result = parser.parse(input.replace("\\n", "\n"))
         
         assertEquals(1, result.size)
         assertEquals("apple", result[0].word)
