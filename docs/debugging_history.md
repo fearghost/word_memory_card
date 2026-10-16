@@ -63,3 +63,6 @@ Fix: Updated version to 0.9.0 in app/build.gradle.kts.
 ## [2026-10-16] Dependency Error: Incorrect Group ID for Generative AI SDK
 Issue: The dependency was using the wrong Group ID (com.google.generativeai).
 Fix: Corrected the Group ID to com.google.ai.client.generativeai in app/build.gradle.kts.
+## [2026-10-16] Unresolved references in GeminiCloudLLMClient.kt
+Issue: Missing Kotlinx Serialization plugin and dependency in app/build.gradle.kts.
+Fix: Added id("org.jetbrains.kotlin.plugin.serialization") and implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3") to app/build.gradle.kts.

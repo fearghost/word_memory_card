@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24"
 }
 
 android {
@@ -71,4 +72,5 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("io.mockk:mockk:1.13.8")
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }
