@@ -69,3 +69,6 @@ Fix: Added id("org.jetbrains.kotlin.plugin.serialization") and implementation("o
 ## [2026-10-16] Unresolved Reference in GeminiCloudLLMClient.kt (Final Fix)
 Issue: Import statements were using the incorrect package path.
 Fix: Updated imports in GeminiCloudLLMClient.kt to use com.google.ai.client.generativeai.
+## [2026-10-16] JVM Target Mismatch Error
+Issue: Cannot inline bytecode built with JVM target 11 into bytecode built with 1.8.
+Fix: Updated app/build.gradle.kts to use JavaVersion.VERSION_11 for compileOptions and jvmTarget = '11' for kotlinOptions.

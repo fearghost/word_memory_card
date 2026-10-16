@@ -60,3 +60,5 @@ Fixed the incorrect Group ID for the Generative AI SDK in app/build.gradle.kts (
 Fixed dependency issues in app/build.gradle.kts by adding Kotlinx Serialization plugin and dependency, and ensuring correct Generative AI SDK Group ID.
 ## [2026-10-16]
 Finalized GeminiCloudLLMClient.kt by correcting the package imports from com.google.generativeai to com.google.ai.client.generativeai.
+## [2026-10-16]
+Resolved JVM target mismatch in app/build.gradle.kts by upgrading compileOptions and kotlinOptions to target Java 11.
