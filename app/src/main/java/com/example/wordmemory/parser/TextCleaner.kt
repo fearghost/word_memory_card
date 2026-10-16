@@ -46,39 +46,35 @@ class TextCleaner {
         val koreanTokens = mutableListOf<String>()
 
         val lines = cleanedText.lines()
-        var foundFirstLabel = false
 
         for (line in lines) {
             var trimmed = line.trim()
             if (trimmed.isEmpty()) continue
 
-            // Check if this line contains a label before stripping it
+            // Check if this line contains a label
             val hasWordLabel = trimmed.contains("Word", ignoreCase = true)
             val hasMeaningLabel = trimmed.contains("Meaning", ignoreCase = true)
 
             if (hasWordLabel || hasMeaningLabel) {
-                foundFirstLabel = true
-            }
+                // Strip labels (Word/Meaning) from the line
+                for (pattern in labelPatterns) {
+                    trimmed = trimmed.replace(pattern, "").trim()
+                }
 
-            if (!foundFirstLabel) continue
+                if (trimmed.isEmpty()) continue
 
-            // Strip labels (Word/Meaning) from the line before classifying
-            for (pattern in labelPatterns) {
-                trimmed = trimmed.replace(pattern, "").trim()
-            }
-
-            if (trimmed.isEmpty()) continue
-
-            val hasHangul = hangulRegex.find(trimmed) != null
-            
-            if (hasHangul) {
-                koreanTokens.add(trimmed)
-            } else {
-                // Only add to words if it's not empty and has a reasonable length
-                if (trimmed.length >= 2) {
-                    englishTokens.add(trimmed)
+                val hasHangul = hangulRegex.find(trimmed) != null
+                
+                if (hasHangul) {
+                    koreanTokens.add(trimmed)
+                } else {
+                    // Only add to words if it's not empty and has a reasonable length
+                    if (trimmed.length >= 2) {
+                        englishTokens.add(trimmed)
+                    }
                 }
             }
+            // If no label is present, the line is treated as noise and skipped.
         }
 
         return Pair(englishTokens, koreanTokens)

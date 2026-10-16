@@ -93,3 +93,7 @@ Fix: Added DictionaryEntity::class to the @Database entities list and imported t
 ## [2026-10-16] Compilation errors in AppNavigation.kt
 - Issue: Compilation error in AppNavigation.kt due to mismatch between screen composable signatures and their call sites after removing unused parameters.
 - Fix: Updated AppNavigation.kt to remove the 'viewModel' parameter from HomeScreen call and 'bundleId' parameter from ReviewEditScreen call.
+
+## [2026-10-16] TextParser noise filtering bug
+- Issue: `test noise filtering with labels` failed because `TextCleaner.tokenize` included non-labeled lines (noise) in the English token pool after the first label was encountered.
+- Fix: Refactored `TextCleaner.tokenize` to only include lines that explicitly contain "Word" or "Meaning" labels, ensuring noise is correctly ignored.

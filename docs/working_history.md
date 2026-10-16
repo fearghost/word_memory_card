@@ -78,3 +78,7 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 ## [2026-10-16] Fixed AppNavigation.kt call sites to match updated screen signatures
 - Corrected HomeScreen call in AppNavigation.kt by removing the unused viewModel parameter.
 - Corrected ReviewEditScreen call in AppNavigation.kt by removing the unused bundleId parameter.
+
+## [2026-10-16] Fixed TextParser unit test failure (noise filtering)
+- Resolved `test noise filtering with labels` failure in `TextParserTest.kt`.
+- Fixed `TextCleaner.tokenize` to only process lines that explicitly contain "Word" or "Meaning" labels, preventing noise (like "Page 2") from being incorrectly identified as English words.
