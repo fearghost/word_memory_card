@@ -50,15 +50,14 @@ class TextCleaner {
             
             if (cleanedToken.isEmpty()) continue
 
-            val hasHangul = hangulRegex.find(cleanedToken) != null
-            
-            if (hasHangul) {
-                koreanTokens.add(cleanedToken)
-            } else {
-                // Only add to words if it's not empty and has a reasonable length
-                if (cleanedToken.length >= 2) {
-                    englishTokens.add(cleanedToken)
-                }
+            val englishPart = cleanedToken.replace(hangulRegex, "")
+            val hangulPart = cleanedToken.filter { hangulRegex.matches(it.toString()) }
+
+            if (englishPart.length >= 2) {
+                englishTokens.add(englishPart)
+            }
+            if (hangulPart.isNotEmpty()) {
+                koreanTokens.add(hangulPart)
             }
         }
 
