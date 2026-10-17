@@ -20,7 +20,8 @@ class TextParserTest {
         coEvery { mockDictionaryRepository.getMeaning("banana") } returns "바나나"
         coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
 
-        val input = "apple 사과 banana 바나나"
+        // New logic requires line-based separation for phrases
+        val input = "apple\n사과\nbanana\n바나나"
         val result = parser.parse(input)
         
         assertEquals(2, result.size)
@@ -37,7 +38,7 @@ class TextParserTest {
         coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
 
         val input = "apple\n사과\nbanana\n바나나"
-        val result = parser.parse(input.replace("\\n", "\n"))
+        val result = parser.parse(input)
         
         assertEquals(2, result.size)
         assertEquals("apple", result[0].word)
@@ -52,7 +53,8 @@ class TextParserTest {
         coEvery { mockDictionaryRepository.getMeaning("banana") } returns "바나나"
         coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
 
-        val input = "!!!apple... 사과!!! banana 바나나"
+        // Noise should be cleaned, and each pair should be on its own line
+        val input = "!!!apple...\n사과!!!\nbanana\n바나나"
         val result = parser.parse(input)
         
         assertEquals(2, result.size)
