@@ -20,10 +20,9 @@ class GeminiCloudLLMClient(
 
     // Candidate models to try in order
     private val candidateModels = listOf(
-        "gemini-1.5-flash",
-        "gemini-1.5-pro",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite"
+        "gemini-3.8-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.6-flash"
     )
 
     // Tracks the last successful model index to avoid re-probing failed models
