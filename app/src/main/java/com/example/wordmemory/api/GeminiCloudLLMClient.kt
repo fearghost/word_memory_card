@@ -7,19 +7,27 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import android.util.Log
 
 /**
- * Phase 3: Real Gemini Cloud LLM Client.
- * Uses Google's Generative AI SDK to perform semantic matching.
+ * Phase 3: Self-Healing Cloud LLM Client.
+ * Automatically attempts multiple model names to bypass 404 errors 
+ * and logs the successful model for future hardcoding.
  */
 class GeminiCloudLLMClient(
     private val apiKey: String
 ) : CloudLLMClient {
 
-    private val model = GenerativeModel(
-        modelName = "gemini-1.5-pro",
-        apiKey = apiKey
+    // Candidate models to try in order
+    private val candidateModels = listOf(
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite"
     )
+
+    // Tracks the last successful model index to avoid re-probing failed models
+    private var successfulModelIndex = -1
 
     // JSON parser for the LLM response
     private val json = Json
@@ -51,24 +59,59 @@ class GeminiCloudLLMClient(
             ]
         """.trimIndent()
 
-        // Debug logging
-        android.util.Log.d("GeminiCloudLLMClient", "Sending Prompt: $prompt")
+        // Start trying from the last successful model, or from index 0
+        val startIndex = if (successfulModelIndex >= 0) successfulModelIndex else 0
 
-        return try {
-            val response = model.generateContent(prompt)
-            val responseText = response.text ?: ""
-            
-            android.util.Log.d("GeminiCloudLLMClient", "Received Response: $responseText")
+        for (i in startIndex until candidateModels.size) {
+            val modelName = candidateModels[i]
+            val model = GenerativeModel(
+                modelName = modelName,
+                apiKey = apiKey
+            )
 
-            // Extract the JSON array using Regex to handle cases where the LLM adds conversational text
-            val jsonRegex = Regex("\\[[\\s\\S]*\\]")
-            val cleanedJson = jsonRegex.find(responseText)?.value ?: responseText
+            Log.d("GeminiCloudLLMClient", "Attempting match with model: $modelName")
 
-            parseJsonResponse(cleanedJson)
-        } catch (e: Exception) {
-            android.util.Log.e("GeminiCloudLLMClient", "Error during match: ${e.message}")
-            emptyList()
+            try {
+                val response = model.generateContent(prompt)
+                val responseText = response.text ?: ""
+
+                if (responseText.isEmpty()) {
+                    throw Exception("Empty response from LLM")
+                }
+
+                Log.d("GeminiCloudLLMClient", "Received Response: $responseText")
+
+                // Extract the JSON array using Regex to handle cases where the LLM adds conversational text
+                val jsonRegex = Regex("\\[[\\s\\S]*\\]")
+                val cleanedJson = jsonRegex.find(responseText)?.value ?: responseText
+
+                val result = parseJsonResponse(cleanedJson)
+                
+                // If we got a non-empty result, we consider this model successful
+                if (result.isNotEmpty()) {
+                    successfulModelIndex = i
+                    Log.i("GeminiCloudLLMClient", "SUCCESS! Working Model Found: $modelName")
+                    return result
+                } else {
+                    Log.w("GeminiCloudLLMClient", "Model $modelName returned empty result. Trying next...")
+                }
+
+            } catch (e: Exception) {
+                val message = e.message ?: ""
+                // Check if it's a 404 / Not Found error (model name mismatch)
+                if (message.contains("not found", ignoreCase = true) || message.contains("404")) {
+                    Log.w("GeminiCloudLLMClient", "Model $modelName failed (404/Not Found). Trying next...")
+                    // Move to next model in the loop
+                } else {
+                    // For other errors (network, etc.), we stop probing to avoid infinite loops
+                    Log.e("GeminiCloudLLMClient", "Critical Error with model $modelName: $message")
+                    break
+                }
+            }
         }
+
+        Log.e("GeminiCloudLLMClient", "All candidate models failed to provide a match.")
+        return emptyList()
     }
 
     private fun parseJsonResponse(jsonString: String): List<ParsedWord> {
@@ -82,6 +125,7 @@ class GeminiCloudLLMClient(
                 )
             }
         } catch (e: Exception) {
+            Log.e("GeminiCloudLLMClient", "JSON Parsing Error: ${e.message}")
             emptyList()
         }
     }
