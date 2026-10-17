@@ -100,11 +100,9 @@ class GeminiCloudLLMClient(
                 // Check if it's a 404 / Not Found error (model name mismatch)
                 if (message.contains("not found", ignoreCase = true) || message.contains("404")) {
                     Log.w("GeminiCloudLLMClient", "Model $modelName failed (404/Not Found). Trying next...")
-                    // Move to next model in the loop
                 } else {
-                    // For other errors (network, etc.), we stop probing to avoid infinite loops
-                    Log.e("GeminiCloudLLMClient", "Critical Error with model $modelName: $message")
-                    break
+                    // For other errors, we now try the next model instead of breaking
+                    Log.w("GeminiCloudLLMClient", "Model $modelName failed with error: $message. Trying next...")
                 }
             }
         }
