@@ -1,7 +1,9 @@
 package com.example.wordmemory.parser
 
 /**
- * Cleans OCR text and tokenizes it into English and Korean pools.
+ * Cleans OCR text and parses it into English and Korean phrase pools.
+ * Instead of tokenizing into individual words, it preserves phrases 
+ * by treating each line as a potential English-Korean pair.
  */
 class TextCleaner {
 
@@ -30,33 +32,46 @@ class TextCleaner {
     }
 
     /**
-     * Splits the cleaned text into two pools: English words and Korean meanings.
-     * Uses a "Bag-of-Words" approach to be robust against OCR noise and label corruption.
+     * Splits the cleaned text into two pools: English phrases and Korean phrases.
+     * Uses a line-based approach to preserve semantic units (e.g., "take off" or "만들어 내다").
      * 
      * @param cleanedText The text after noise removal.
-     * @return A Pair containing (List of English tokens, List of Korean tokens).
+     * @return A Pair containing (List of English phrases, List of Korean phrases).
      */
     fun tokenize(cleanedText: String): Pair<List<String>, List<String>> {
-        val englishTokens = mutableListOf<String>()
-        val koreanTokens = mutableListOf<String>()
+        val englishPhrases = mutableListOf<String>()
+        val koreanPhrases = mutableListOf<String>()
 
-        // Split by any non-alphanumeric character to separate words and handle punctuation-joined tokens (e.g., "apple:사과")
-        val rawTokens = cleanedText.split(Regex("[^\\p{L}\\p{N}]+"))
+        // Split by lines to treat each line as a semantic unit
+        val lines = cleanedText.lines()
 
-        for (token in rawTokens) {
-            if (token.isEmpty()) continue
+        for (line in lines) {
+            val trimmedLine = line.trim()
+            if (trimmedLine.isEmpty()) continue
 
-            val englishPart = token.replace(hangulRegex, "")
-            val hangulPart = token.filter { hangulRegex.matches(it.toString()) }
+            // Find the first occurrence of a Hangul character to separate English and Korean
+            val hangulIndex = trimmedLine.indexOfFirst { hangulRegex.matches(it.toString()) }
 
-            if (englishPart.length >= 2) {
-                englishTokens.add(englishPart)
-            }
-            if (hangulPart.isNotEmpty()) {
-                koreanTokens.add(hangulPart)
+            if (hangulIndex != -1) {
+                // Line contains both English and Korean (e.g., "take off: 이륙하다")
+                val englishPart = trimmedLine.substring(0, hangulIndex).trim()
+                val hangulPart = trimmedLine.substring(hangulIndex).trim()
+
+                if (englishPart.isNotEmpty()) {
+                    englishPhrases.add(englishPart)
+                }
+                if (hangulPart.isNotEmpty()) {
+                    koreanPhrases.add(hangulPart)
+                }
+            } else {
+                // Line contains only one language (assumed English if no Hangul is present)
+                // We check length to avoid adding tiny noise fragments
+                if (trimmedLine.length >= 2) {
+                    englishPhrases.add(trimmedLine)
+                }
             }
         }
 
-        return Pair(englishTokens, koreanTokens)
+        return Pair(englishPhrases, koreanPhrases)
     }
 }

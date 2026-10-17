@@ -37,7 +37,9 @@ class HybridSemanticMatcher(
         // 4. Combine local and cloud results
         val allMatches = localMatches + cloudMatches
 
-        // 5. Final step: Sort the resulting pairs alphabetically by the English word
-        return allMatches.sortedBy { it.word }
+        // 5. Final step: Sort the resulting pairs by their original position in the input list
+        return allMatches.sortedBy { match ->
+            englishWords.indexOf(match.word)
+        }
     }
 }
