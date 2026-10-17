@@ -17,7 +17,7 @@ class GeminiCloudLLMClient(
 ) : CloudLLMClient {
 
     private val model = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = "gemini-1.5-flash-latest",
         apiKey = apiKey
     )
 
