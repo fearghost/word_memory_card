@@ -20,6 +20,9 @@ class TextCleaner {
         Regex("(?i)number\\s*\\d+"),
     )
 
+    // Regex for punctuation (non-alphanumeric, non-whitespace, non-hangul)
+    private val punctuationRegex = Regex("[^a-zA-Z0-9\\s\\uAC00-\\uD7A3\\u3130-\\u318F]")
+
     /**
      * Removes identified noise patterns from the raw text.
      */
@@ -28,6 +31,7 @@ class TextCleaner {
         for (pattern in noisePatterns) {
             cleaned = cleaned.replace(pattern, "")
         }
+        cleaned = cleaned.replace(punctuationRegex, "")
         return cleaned.trim()
     }
 
