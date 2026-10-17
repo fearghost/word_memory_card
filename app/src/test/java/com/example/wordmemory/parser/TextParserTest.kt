@@ -21,7 +21,12 @@ class TextParserTest {
         coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
 
         // New logic requires line-based separation for phrases
-        val input = "apple\n사과\nbanana\n바나나"
+        val input = """
+            apple
+            사과
+            banana
+            바나나
+        """.trimIndent()
         val result = parser.parse(input)
         
         assertEquals(2, result.size)
@@ -54,7 +59,12 @@ class TextParserTest {
         coEvery { mockCloudMatcher.match(any(), any()) } returns emptyList()
 
         // Noise should be cleaned, and each pair should be on its own line
-        val input = "!!!apple...\n사과!!!\nbanana\n바나나"
+        val input = """
+            !!!apple...
+            사과!!!
+            banana
+            바나나
+        """.trimIndent()
         val result = parser.parse(input)
         
         assertEquals(2, result.size)
