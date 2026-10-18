@@ -95,21 +95,6 @@ fun NewBundleScreen(
                 }
             }
 
-            if (rawOcrText != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Raw OCR Text (Debug):", style = MaterialTheme.typography.labelLarge)
-                OutlinedCard(
-                    modifier = Modifier.fillMaxWidth().heightIn(max = 150.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Text(
-                        text = rawOcrText!!,
-                        modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-
             if (errorMessage != null) {
                 Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
             }
