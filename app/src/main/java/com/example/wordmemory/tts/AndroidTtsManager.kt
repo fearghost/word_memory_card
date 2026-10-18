@@ -42,4 +42,3 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
         }
     }
 }
-}
