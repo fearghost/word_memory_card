@@ -43,7 +43,7 @@ fun StudyScreen(
     }
 
     LaunchedEffect(currentIndex, isRotated, isSwapped) {
-        if (!isRotated && !isSwapped) {
+        if (words.isNotEmpty() && !isRotated && !isSwapped) {
             ttsManager.speak(words[currentIndex].word)
         }
     }
