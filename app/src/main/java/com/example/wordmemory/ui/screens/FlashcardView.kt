@@ -24,6 +24,7 @@ import com.example.wordmemory.domain.model.ParsedWord
 fun FlashcardView(
     word: ParsedWord,
     isRotated: Boolean,
+    isSwapped: Boolean,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,7 +44,6 @@ fun FlashcardView(
             .clickable { onCardClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        // Box를 전혀 사용하지 않고 Card 내부의 기본 Column 활용
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -53,7 +53,7 @@ fun FlashcardView(
         ) {
             if (rotation <= 90f) {
                 Text(
-                    text = word.word,
+                    text = if (isSwapped) word.meaning else word.word,
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -68,7 +68,7 @@ fun FlashcardView(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = word.meaning,
+                        text = if (isSwapped) word.word else word.meaning,
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.secondary
                     )

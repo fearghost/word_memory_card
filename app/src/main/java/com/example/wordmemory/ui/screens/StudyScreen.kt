@@ -25,6 +25,7 @@ fun StudyScreen(
     var currentIndex by remember { mutableIntStateOf(0) }
     var selectedLocale by remember { mutableStateOf(Locale.US) }
     var isRotated by remember { mutableStateOf(false) }
+    var isSwapped by remember { mutableStateOf(false) }
 
     LaunchedEffect(bundleId) {
         words = repository.getWordsByBundle(bundleId)
@@ -96,6 +97,11 @@ fun StudyScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                     }
+                    FilterChip(
+                        selected = isSwapped,
+                        onClick = { isSwapped = !isSwapped },
+                        label = { Text("Swap") }
+                    )
                 }
             }
 
@@ -103,6 +109,7 @@ fun StudyScreen(
                 FlashcardView(
                     word = words[currentIndex],
                     isRotated = isRotated,
+                    isSwapped = isSwapped,
                     onCardClick = { isRotated = !isRotated },
                     modifier = Modifier.fillMaxSize()
                 )
