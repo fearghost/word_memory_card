@@ -24,7 +24,8 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
 
     override fun speak(text: String) {
         if (isInitialized) {
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+            // Use an empty string instead of null for utteranceId to avoid potential NullPointerException
+            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
         }
     }
 
