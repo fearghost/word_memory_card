@@ -2,6 +2,8 @@ package com.example.wordmemory.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -126,11 +128,22 @@ fun StudyScreen(
                 }
             }
 
-            Button(
-                onClick = { currentIndex++ },
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Next Card")
+                Button(
+                    onClick = { if (currentIndex > 0) currentIndex-- },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous")
+                }
+                Button(
+                    onClick = { if (currentIndex < words.size - 1) currentIndex++ },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next")
+                }
             }
         }
     }
