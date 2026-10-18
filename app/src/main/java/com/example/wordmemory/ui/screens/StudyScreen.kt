@@ -32,6 +32,10 @@ fun StudyScreen(
         isLoading = false
     }
 
+    LaunchedEffect(selectedLocale) {
+        ttsManager.setAccent(selectedLocale)
+    }
+
     LaunchedEffect(currentIndex) {
         isRotated = false
     }
