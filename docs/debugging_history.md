@@ -112,3 +112,5 @@ Resolution: Updated test expectations to match current parser output.
 Resolution: Replaced tests with label-free diagnostic tests to verify core logic.
 
 ## [2026-10-18] TextParserTest.kt failed because TextCleaner.clean() does not remove punctuation (!!!, ...), only specific noise words.
+
+## [2026-10-18] TextCleaner.kt regex failed to remove punctuation (e.g. '!!!', '...'). Resolved by adding a non-alphanumeric punctuation regex.
