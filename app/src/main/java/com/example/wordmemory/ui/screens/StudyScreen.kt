@@ -28,6 +28,7 @@ fun StudyScreen(
     var selectedLocale by remember { mutableStateOf(Locale.US) }
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
+    val isTtsReady by ttsManager.isReady.collectAsState()
 
     LaunchedEffect(bundleId) {
         words = repository.getWordsByBundle(bundleId)
@@ -40,6 +41,12 @@ fun StudyScreen(
 
     LaunchedEffect(currentIndex) {
         isRotated = false
+    }
+
+    LaunchedEffect(isTtsReady) {
+        if (isTtsReady && words.isNotEmpty() && !isRotated && !isSwapped) {
+            ttsManager.speak(words[currentIndex].word)
+        }
     }
 
     LaunchedEffect(currentIndex, isRotated, isSwapped) {
