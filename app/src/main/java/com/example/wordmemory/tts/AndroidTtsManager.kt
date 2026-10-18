@@ -7,6 +7,7 @@ import java.util.Locale
 class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var isInitialized = false
+    private var pendingLocale: Locale? = null
 
     init {
         tts = TextToSpeech(context, this)
@@ -15,6 +16,9 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             isInitialized = true
+            pendingLocale?.let { locale ->
+                tts?.language = locale
+            }
         }
     }
 
@@ -27,6 +31,8 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     override fun setAccent(locale: Locale) {
         if (isInitialized) {
             tts?.language = locale
+        } else {
+            pendingLocale = locale
         }
     }
 }

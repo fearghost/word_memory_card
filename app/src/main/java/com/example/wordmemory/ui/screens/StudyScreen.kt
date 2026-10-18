@@ -42,6 +42,12 @@ fun StudyScreen(
         isRotated = false
     }
 
+    LaunchedEffect(currentIndex, isRotated, isSwapped) {
+        if (!isRotated && !isSwapped) {
+            ttsManager.speak(words[currentIndex].word)
+        }
+    }
+
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
