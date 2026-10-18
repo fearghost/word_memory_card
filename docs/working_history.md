@@ -107,3 +107,5 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 ## [2026-10-18] Fixed TextParserTest.kt structure and identified TextCleaner punctuation removal issue.
 
 ## [2026-10-18] Fixed TextCleaner punctuation regex, added flashcard swap button, and removed raw OCR debug UI.
+
+## [2026-10-18] Fixed TextCleaner punctuation, added UI swap button, removed raw OCR UI, and fixed TTS accent initialization.
