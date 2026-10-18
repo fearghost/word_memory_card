@@ -33,7 +33,7 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
             // Add a small delay before signaling readiness to ensure the engine 
             // is fully "warmed up" and ready for the first utterance.
             scope.launch {
-                delay(500)
+                delay(1500)
                 isReady.value = true
             }
         }
