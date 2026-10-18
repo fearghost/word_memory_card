@@ -3,6 +3,7 @@ package com.example.wordmemory.tts
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import com.example.wordmemory.tts.TtsManager
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
@@ -11,6 +12,7 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     private var tts: TextToSpeech? = null
     private var isInitialized = false
     private var pendingLocale: Locale? = null
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     override val isReady = MutableStateFlow(false)
 
@@ -21,9 +23,18 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             isInitialized = true
-            isReady.value = true
+            
+            // Apply any locale that was requested before initialization
             pendingLocale?.let { locale ->
                 tts?.language = locale
+                pendingLocale = null
+            }
+
+            // Add a small delay before signaling readiness to ensure the engine 
+            // is fully "warmed up" and ready for the first utterance.
+            scope.launch {
+                delay(500)
+                isReady.value = true
             }
         }
     }
