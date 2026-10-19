@@ -111,3 +111,10 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 ## [2026-10-18] Fixed TextCleaner punctuation, added UI swap button, removed raw OCR UI, and fixed TTS accent initialization.
 
 ## [2026-10-18] Replaced 'Next Card' button with dual arrow buttons (Previous/Next) for improved navigation in StudyScreen.
+
+## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
+- Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.
+- Resolved CI compilation error in `AndroidTtsManager.kt` caused by an incorrect `speak` function signature.
+- Fixed a missing `kotlinx.coroutines.delay` import in `StudyScreen.kt`.
+- Verified fix via successful GitHub Actions CI build.
+

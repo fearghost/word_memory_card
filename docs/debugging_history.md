@@ -116,3 +116,12 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 ## [2026-10-18] TextCleaner.kt regex failed to remove punctuation (e.g. '!!!', '...'). Resolved by adding a non-alphanumeric punctuation regex.
 
 ## [2026-10-18] TTS read English words with Korean accent on initial load in StudyScreen. Resolved by applying selectedLocale to ttsManager via LaunchedEffect.
+
+## [2026-10-19] TTS playback issues and CI compilation errors
+- Issue: `repeat(3)` in `StudyScreen.kt` caused the first word to be played 3 times.
+  Fix: Replaced `repeat(3)` with a single `speak()` call followed by a loop that waits for the `isSpeaking` state to become `true` (up to 1.5s), retrying only if it fails to start.
+- Issue: `AndroidTtsManager.kt` failed to compile due to a type mismatch in the `speak` method (passing `String` where `Bundle` was expected).
+  Fix: Used the 4-argument version of `speak` with an explicit `null` for the `Bundle` parameter.
+- Issue: `StudyScreen.kt` failed to compile due to missing `kotlinx.coroutines.delay` import.
+  Fix: Added the missing import.
+
