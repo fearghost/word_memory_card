@@ -43,15 +43,21 @@ fun StudyScreen(
         isRotated = false
     }
 
-    LaunchedEffect(isTtsReady) {
+    // Combined effect to handle initial playback and subsequent navigation safely
+    LaunchedEffect(isTtsReady, words, currentIndex, isRotated, isSwapped) {
         if (isTtsReady && words.isNotEmpty() && !isRotated && !isSwapped) {
-            ttsManager.speak(words[currentIndex].word)
-        }
-    }
-
-    LaunchedEffect(currentIndex, isRotated, isSwapped) {
-        if (words.isNotEmpty() && !isRotated && !isSwapped) {
-            ttsManager.speak(words[currentIndex].word)
+            // A small buffer to ensure the engine is fully primed after isReady becomes true
+            delay(200) 
+            
+            // For the very first word, we try multiple times to ensure it's not lost during engine warmup
+            if (currentIndex == 0) {
+                repeat(3) { i ->
+                    ttsManager.speak(words[currentIndex].word)
+                    delay(500)
+                }
+            } else {
+                ttsManager.speak(words[currentIndex].word)
+            }
         }
     }
 
