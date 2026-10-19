@@ -2,6 +2,7 @@ package com.example.wordmemory.tts
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import com.example.wordmemory.tts.TtsManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,9 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     override val isReady = MutableStateFlow(false)
+    override val isSpeaking = MutableStateFlow(false)
+
+    private val utteranceId = "study_card"
 
     init {
         tts = TextToSpeech(context, this)
@@ -25,14 +29,26 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
         if (status == TextToSpeech.SUCCESS) {
             isInitialized = true
             
-            // Apply any locale that was requested before initialization
+            // Set up the progress listener to track when the engine is actually speaking
+            tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {
+                    isSpeaking.value = true
+                }
+
+                override fun onDone(utteranceId: String?) {
+                    isSpeaking.value = false
+                }
+
+                override fun onError(utteranceId: String?) {
+                    isSpeaking.value = false
+                }
+            })
+
             pendingLocale?.let { locale ->
                 tts?.language = locale
                 pendingLocale = null
             }
 
-            // The engine is "initialized" but might not be "warmed up" for the first playback.
-            // We use a delay to ensure the engine is stable and the language is applied.
             scope.launch {
                 delay(2000) 
                 isWarmedUp = true
@@ -43,7 +59,8 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
 
     override fun speak(text: String) {
         if (isInitialized) {
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            // Use the specific utteranceId to allow tracking via UtteranceProgressListener
+            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, utteranceId, utteranceId)
         }
     }
 

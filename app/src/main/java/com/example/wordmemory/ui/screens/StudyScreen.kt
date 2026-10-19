@@ -30,6 +30,7 @@ fun StudyScreen(
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
     val isTtsReady by ttsManager.isReady.collectAsState()
+    val isSpeaking by ttsManager.isSpeaking.collectAsState()
 
     LaunchedEffect(bundleId) {
         words = repository.getWordsByBundle(bundleId)
@@ -47,14 +48,24 @@ fun StudyScreen(
     // Combined effect to handle initial playback and subsequent navigation safely
     LaunchedEffect(isTtsReady, words, currentIndex, isRotated, isSwapped) {
         if (isTtsReady && words.isNotEmpty() && !isRotated && !isSwapped) {
-            // A small buffer to ensure the engine is fully primed after isReady becomes true
             delay(200) 
             
-            // For the very first word, we try multiple times to ensure it's not lost during engine warmup
             if (currentIndex == 0) {
-                repeat(3) { i ->
+                ttsManager.speak(words[currentIndex].word)
+                
+                // Wait up to 1.5s to see if it actually starts speaking
+                var started = false
+                val startTime = System.currentTimeMillis()
+                while (System.currentTimeMillis() - startTime < 1500) {
+                    if (isSpeaking) {
+                        started = true
+                        break
+                    }
+                    delay(100)
+                }
+                
+                if (!started) {
                     ttsManager.speak(words[currentIndex].word)
-                    delay(500)
                 }
             } else {
                 ttsManager.speak(words[currentIndex].word)
