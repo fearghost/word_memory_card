@@ -11,6 +11,7 @@ import java.util.Locale
 class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var isInitialized = false
+    private var isWarmedUp = false
     private var pendingLocale: Locale? = null
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -30,10 +31,11 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
                 pendingLocale = null
             }
 
-            // Add a small delay before signaling readiness to ensure the engine 
-            // is fully "warmed up" and ready for the first utterance.
+            // The engine is "initialized" but might not be "warmed up" for the first playback.
+            // We use a delay to ensure the engine is stable and the language is applied.
             scope.launch {
-                delay(1500)
+                delay(2000) 
+                isWarmedUp = true
                 isReady.value = true
             }
         }
