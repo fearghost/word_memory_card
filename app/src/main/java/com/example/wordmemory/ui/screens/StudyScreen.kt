@@ -14,6 +14,7 @@ import com.example.wordmemory.domain.model.ParsedWord
 import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.tts.TtsManager
 import java.util.Locale
+import kotlinx.coroutines.delay
 
 @Composable
 fun StudyScreen(
