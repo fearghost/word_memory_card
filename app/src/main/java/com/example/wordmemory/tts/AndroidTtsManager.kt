@@ -60,7 +60,7 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     override fun speak(text: String) {
         if (isInitialized) {
             // Use the specific utteranceId to allow tracking via UtteranceProgressListener
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, utteranceId, utteranceId)
+            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, utteranceId)
         }
     }
 
