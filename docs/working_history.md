@@ -85,7 +85,9 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 
 ## [2026-10-16] Secure Gemini API Key Integration Plan
 - **Problem:** API key is hardcoded as `"YOUR_GEMINI_API_KEY"` in `MainActivity.kt`, causing silent failures in Cloud Matcher.
-- **Strategy:** Implement GitHub Secrets $ightarrow$ Gradle $ightarrow$ BuildConfig injection to keep the key out of the source code.
+- **Strategy:** Implement GitHub Secrets $
+ightarrow$ Gradle $
+ightarrow$ BuildConfig injection to keep the key out of the source code.
 - **Next Steps:**
     1. Update `app/build.gradle.kts` to inject `GEMINI_API_KEY` into `BuildConfig`.
     2. Update `app/src/main/java/com/example/wordmemory/ui/MainActivity.kt` to use `BuildConfig.GEMINI_API_KEY`.
@@ -111,6 +113,17 @@ Added DictionaryEntity to AppDatabase entities list to resolve Room KSP compilat
 ## [2026-10-18] Fixed TextCleaner punctuation, added UI swap button, removed raw OCR UI, and fixed TTS accent initialization.
 
 ## [2026-10-18] Replaced 'Next Card' button with dual arrow buttons (Previous/Next) for improved navigation in StudyScreen.
+
+## [2026-10-22] Comprehensive UI/UX redesign across all screens
+- Added light/dark theme support with Material 3 color scheme in MainActivity.kt
+- HomeScreen: TopAppBar, ExtendedFloatingActionButton, empty state screen, word count display per bundle, pill-shaped action buttons
+- StudyScreen: Progress indicator bar, completion screen with emoji, locale chips with flag emojis, improved flashcard with larger elevation and rounded corners, speak button as circular overlay, navigation buttons with icons
+- FlashcardView: Distinct front/back colors (primary/tertiary containers), labeled faces ("Word"/"Meaning"), larger bold typography
+- ParsingScreen: TopAppBar, empty/loading states, bottom fixed action bar, individual word cards with speak button
+- NewBundleScreen: TopAppBar with close button, icon-enhanced image picker card, extracted words list with badge count, error display in error container, create button with word count badge
+- ReviewEditScreen: TopAppBar with save action, bottom fixed action bar, rounded OutlinedTextField with focus colors, empty state screen
+- Added WordDao.getAllBundlesWithWordCount() query for bundle-level word count statistics
+- Added WordRepository.getAllBundlesWithWordCount() to expose the new DAO method
 
 ## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
 - Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.

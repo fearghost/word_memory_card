@@ -8,6 +8,8 @@ class WordRepository(private val wordDao: WordDao) {
     
     fun getAllBundles(): Flow<List<WordBundleEntity>> = wordDao.getAllBundles()
 
+    fun getAllBundlesWithWordCount(): Flow<List<WordDao.BundledWordCount>> = wordDao.getAllBundlesWithWordCount()
+
     suspend fun createBundle(name: String): Long {
         val bundle = WordBundleEntity(name = name)
         return wordDao.insertBundle(bundle)

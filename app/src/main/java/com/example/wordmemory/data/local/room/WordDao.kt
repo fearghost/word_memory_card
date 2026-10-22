@@ -8,6 +8,22 @@ interface WordDao {
     @Query("SELECT * FROM word_bundles ORDER BY createdAt DESC")
     fun getAllBundles(): Flow<List<WordBundleEntity>>
 
+    @Query("""
+        SELECT wb.*, COUNT(wi.id) as wordCount 
+        FROM word_bundles wb 
+        LEFT JOIN word_items wi ON wb.id = wi.bundleId 
+        GROUP BY wb.id 
+        ORDER BY wb.createdAt DESC
+    """)
+    fun getAllBundlesWithWordCount(): Flow<List<BundledWordCount>>
+
+    data class BundledWordCount(
+        val id: Long,
+        val name: String,
+        val createdAt: Long,
+        val wordCount: Int
+    )
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBundle(bundle: WordBundleEntity): Long
 
@@ -22,4 +38,7 @@ interface WordDao {
 
     @Delete
     suspend fun deleteBundle(bundle: WordBundleEntity)
+
+    @Query("SELECT COUNT(*) FROM word_items WHERE bundleId = :bundleId")
+    suspend fun getWordCountByBundleId(bundleId: Long): Int
 }
