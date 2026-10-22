@@ -43,25 +43,9 @@ jobs:
         name: app-debug-apk
         path: artifacts/WordMemoryDbg.apk
 
-    # ── Release build ────────────────────────────────────────────
-    - name: Generate signing keystore
-      run: |
-        mkdir -p .
-        keytool -genkeypair -v \
-          -keystore signing.jks \
-          -storepass wordmemory123 \
-          -keypass wordmemory123 \
-          -alias wordmemory \
-          -keyalg RSA -keysize 2048 -validity 10000 \
-          -dname "CN=WordMemory, OU=Dev, O=WordMemory, L=Seoul, ST=Gyeonggi, C=KR"
-
+    # ── Release build (unsigned — add signing keys to enable) ────
     - name: Build Release APK
-      run: |
-        ./gradlew assembleRelease --no-daemon \
-          -Psigning.storeFile=signing.jks \
-          -Psigning.storePassword=wordmemory123 \
-          -Psigning.keyAlias=wordmemory \
-          -Psigning.keyPassword=wordmemory123
+      run: ./gradlew assembleRelease --no-daemon
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 

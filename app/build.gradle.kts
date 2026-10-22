@@ -20,19 +20,10 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", geminiKey)
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile.set(file(project.findProperty("signing.storeFile") as String? ?: "signing.jks"))
-            storePassword.set(project.findProperty("signing.storePassword") as String? ?: "")
-            keyAlias.set(project.findProperty("signing.keyAlias") as String? ?: "")
-            keyPassword.set(project.findProperty("signing.keyPassword") as String? ?: "")
-        }
-    }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
         }
     }
 
