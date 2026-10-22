@@ -3,6 +3,7 @@ name: Android CI
 on:
   push:
     branches: [ master ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ master ]
 
@@ -25,13 +26,72 @@ jobs:
     - name: Run unit tests
       run: ./gradlew testDebugUnitTest
 
+    # ── Debug build ──────────────────────────────────────────────
     - name: Build Debug APK
       run: ./gradlew clean assembleDebug --no-daemon
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-    - name: Upload APK artifact
+    - name: Rename & copy Debug APK
+      run: |
+        mkdir -p artifacts
+        cp app/build/outputs/apk/debug/app-debug.apk artifacts/WordMemoryDbg.apk
+
+    - name: Upload Debug APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: artifacts/WordMemoryDbg.apk
+
+    # ── Release build ────────────────────────────────────────────
+    - name: Generate signing keystore
+      run: |
+        mkdir -p .
+        keytool -genkeypair -v \
+          -keystore signing.jks \
+          -storepass wordmemory123 \
+          -keypass wordmemory123 \
+          -alias wordmemory \
+          -keyalg RSA -keysize 2048 -validity 10000 \
+          -dname "CN=WordMemory, OU=Dev, O=WordMemory, L=Seoul, ST=Gyeonggi, C=KR"
+
+    - name: Build Release APK
+      run: |
+        ./gradlew assembleRelease --no-daemon \
+          -Psigning.storeFile=signing.jks \
+          -Psigning.storePassword=wordmemory123 \
+          -Psigning.keyAlias=wordmemory \
+          -Psigning.keyPassword=wordmemory123
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+    - name: Rename & copy Release APK
+      run: |
+        mkdir -p artifacts
+        find app/build/outputs/apk/release/ -name '*.apk' -exec cp {} artifacts/WordMemory.apk \;
+
+    - name: Upload Release APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release-apk
+        path: artifacts/WordMemory.apk
+
+    # ── GitHub Release (tag push only) ───────────────────────────
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/WordMemory.apk
+        name: ${{ github.ref_name }}
+        body: |
+          ## WordMemory ${{ github.ref_name }}
+
+          ### Changes
+          - OCR flashcard app with AI-powered word parsing
+          - Multi-accent TTS (US, UK, AU)
+          - Interactive 3D flip cards
+          - Bundle management & editing
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

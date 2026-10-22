@@ -1,0 +1,15 @@
+# Build outputs
+app/build/
+build/
+*.apk
+
+# IDE
+.idea/
+*.iml
+.gradle/
+
+# Signing (local keystore, generated in CI)
+signing.jks
+
+# Local properties
+local.properties

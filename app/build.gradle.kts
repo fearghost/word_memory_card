@@ -20,9 +20,24 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", geminiKey)
     }
 
+    signingConfigs {
+        create("release") {
+            val storeFile = project.findProperty("signing.storeFile") as String? ?: "signing.jks"
+            val storePassword = project.findProperty("signing.storePassword") as String? ?: ""
+            val keyAlias = project.findProperty("signing.keyAlias") as String? ?: ""
+            val keyPassword = project.findProperty("signing.keyPassword") as String? ?: ""
+
+            storeFile = file(storeFile)
+            storePassword = storePassword
+            keyAlias = keyAlias
+            keyPassword = keyPassword
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
