@@ -37,8 +37,8 @@ fun AppNavigation(
         composable("review_edit/{bundleId}") { backStackEntry ->
             val bundleId = backStackEntry.arguments?.getString("bundleId")?.toLong() ?: 0L
             ReviewEditScreen(
-                viewModel = viewModel,
-                onSave = { viewModel.saveWordsToBundle(bundleId, it, repository) },
+                bundleId = bundleId,
+                repository = repository,
                 onCancel = { navController.popBackStack() }
             )
         }
