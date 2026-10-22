@@ -74,7 +74,7 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Book,
+                    imageVector = Icons.Default.Book,
                     contentDescription = null,
                     modifier = Modifier.size(96.dp),
                     tint = MaterialTheme.colorScheme.primaryContainer

@@ -47,7 +47,7 @@ fun ReviewEditScreen(
                 },
                 actions = {
                     TextButton(onClick = { onSave(editableWords) }) {
-                        Icon(Icons.AutoMirrored.Filled.Save, contentDescription = null)
+                        Icon(Icons.Default.Save, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Save")
                     }
@@ -110,7 +110,7 @@ fun ReviewEditScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.Save, contentDescription = null)
+                            Icon(Icons.Default.Save, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Save ${editableWords.size} words")
                         }

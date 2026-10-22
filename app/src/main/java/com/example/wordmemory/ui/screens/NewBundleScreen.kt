@@ -108,7 +108,7 @@ fun NewBundleScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        Icons.AutoMirrored.Filled.CloudUpload,
+                        Icons.Default.CloudUpload,
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
                         tint = MaterialTheme.colorScheme.primary
