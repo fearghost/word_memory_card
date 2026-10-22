@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -36,11 +35,6 @@ fun FlashcardView(
         label = "flashcardRotation"
     )
 
-    // Front face: visible when rotation is in [0, 90] range
-    val frontAlpha = if (rotation <= 90f) 1f else 1f - ((rotation - 90f) / 90f).coerceIn(0f, 1f)
-    // Back face: visible when rotation is in [90, 180] range
-    val backAlpha = if (rotation <= 90f) 1f - (rotation / 90f).coerceIn(0f, 1f) else 1f
-
     Box(
         modifier = modifier
             .graphicsLayer {
@@ -48,29 +42,29 @@ fun FlashcardView(
                 cameraDistance = 8f * density
             }
     ) {
-        // Front face (English when not swapped)
-        if (frontAlpha > 0.01f) {
+        // Front face (English when not swapped) — visible from 0° to 90°
+        if (rotation <= 90f) {
             CardContent(
                 word = if (isSwapped) word.meaning else word.word,
                 label = if (isSwapped) "Meaning" else "Word",
                 isFront = true,
                 onCardClick = onCardClick,
-                modifier = Modifier.alpha(frontAlpha)
+                modifier = Modifier.fillMaxSize()
             )
         }
 
-        // Back face (Korean when not swapped)
-        if (backAlpha > 0.01f) {
+        // Back face (Korean when not swapped) — visible from 90° to 180°
+        if (rotation >= 90f) {
             CardContent(
                 word = if (isSwapped) word.word else word.meaning,
                 label = if (isSwapped) "Word" else "Meaning",
                 isFront = false,
                 onCardClick = onCardClick,
                 modifier = Modifier
+                    .fillMaxSize()
                     .graphicsLayer {
                         rotationY = 180f
                     }
-                    .alpha(backAlpha)
             )
         }
     }
@@ -86,7 +80,6 @@ private fun CardContent(
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize()
             .clip(RoundedCornerShape(24.dp))
             .background(if (isFront) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiaryContainer)
             .clickable(onClick = onCardClick),
