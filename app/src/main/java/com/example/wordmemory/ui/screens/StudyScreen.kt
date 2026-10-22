@@ -242,16 +242,14 @@ fun StudyScreenContent(
                     FilterChip(
                         selected = selectedLocale == locale,
                         onClick = { onLocaleSelect(locale) },
-                        label = { Text(label, style = MaterialTheme.typography.labelMedium) },
-                        border = FilterDefaults.border()
+                        label = { Text(label, style = MaterialTheme.typography.labelMedium) }
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                 }
                 FilterChip(
                     selected = isSwapped,
                     onClick = onSwapToggle,
-                    label = { Text("↔ Swap", style = MaterialTheme.typography.labelMedium) },
-                    border = FilterDefaults.border()
+                    label = { Text("↔ Swap", style = MaterialTheme.typography.labelMedium) }
                 )
             }
         }

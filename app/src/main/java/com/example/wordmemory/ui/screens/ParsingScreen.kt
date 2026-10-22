@@ -173,7 +173,7 @@ private fun ParsedWordCard(word: ParsedWord) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { /* TODO: add speak */ }
+                    .clickable(onClick = { /* TODO: add speak */ })
                     .padding(8.dp)
             ) {
                 Icon(
