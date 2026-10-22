@@ -22,15 +22,11 @@ android {
 
     signingConfigs {
         create("release") {
-            val storeFile = project.findProperty("signing.storeFile") as String? ?: "signing.jks"
-            val storePassword = project.findProperty("signing.storePassword") as String? ?: ""
-            val keyAlias = project.findProperty("signing.keyAlias") as String? ?: ""
-            val keyPassword = project.findProperty("signing.keyPassword") as String? ?: ""
-
-            storeFile = file(storeFile)
-            storePassword = storePassword
-            keyAlias = keyAlias
-            keyPassword = keyPassword
+            val sf = project.findProperty("signing.storeFile") as String? ?: "signing.jks"
+            setStoreFile(file(sf))
+            setStorePassword(project.findProperty("signing.storePassword") as String? ?: "")
+            setKeyAlias(project.findProperty("signing.keyAlias") as String? ?: "")
+            setKeyPassword(project.findProperty("signing.keyPassword") as String? ?: "")
         }
     }
 
