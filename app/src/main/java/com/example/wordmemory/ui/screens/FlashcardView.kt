@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +36,11 @@ fun FlashcardView(
         label = "flashcardRotation"
     )
 
+    // Front face: visible when rotation is in [0, 90] range
+    val frontAlpha = if (rotation <= 90f) 1f else 1f - ((rotation - 90f) / 90f).coerceIn(0f, 1f)
+    // Back face: visible when rotation is in [90, 180] range
+    val backAlpha = if (rotation <= 90f) 1f - (rotation / 90f).coerceIn(0f, 1f) else 1f
+
     Box(
         modifier = modifier
             .graphicsLayer {
@@ -42,24 +48,31 @@ fun FlashcardView(
                 cameraDistance = 8f * density
             }
     ) {
-        // Front face
-        CardContent(
-            word = if (isSwapped) word.meaning else word.word,
-            label = if (isSwapped) "Meaning" else "Word",
-            isFront = rotation <= 90f,
-            onCardClick = onCardClick
-        )
+        // Front face (English when not swapped)
+        if (frontAlpha > 0.01f) {
+            CardContent(
+                word = if (isSwapped) word.meaning else word.word,
+                label = if (isSwapped) "Meaning" else "Word",
+                isFront = true,
+                onCardClick = onCardClick,
+                modifier = Modifier.alpha(frontAlpha)
+            )
+        }
 
-        // Back face (rotated 180°)
-        CardContent(
-            word = if (isSwapped) word.word else word.meaning,
-            label = if (isSwapped) "Word" else "Meaning",
-            isFront = rotation > 90f,
-            onCardClick = onCardClick,
-            modifier = Modifier.graphicsLayer {
-                rotationY = 180f
-            }
-        )
+        // Back face (Korean when not swapped)
+        if (backAlpha > 0.01f) {
+            CardContent(
+                word = if (isSwapped) word.word else word.meaning,
+                label = if (isSwapped) "Word" else "Meaning",
+                isFront = false,
+                onCardClick = onCardClick,
+                modifier = Modifier
+                    .graphicsLayer {
+                        rotationY = 180f
+                    }
+                    .alpha(backAlpha)
+            )
+        }
     }
 }
 
