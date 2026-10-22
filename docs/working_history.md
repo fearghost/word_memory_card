@@ -133,8 +133,12 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - StudyScreen.kt: Removed `FilterDefaults.border()` parameter from FilterChip (API doesn't exist in Compose BOM 2024.05.00)
 
 ## [2026-10-22] Fixed FlashcardView alpha blending for proper 3D face visibility
-- Issue: Opening a bundle showed inverted Korean instead of English; flip revealed normal Korean. Swap mode had the reverse problem. Root cause: Compose's 3D transform lacks backface culling — both card faces rendered simultaneously without correct z-ordering occlusion, causing the rotated-back face to appear mirrored through the front.
+- Issue: Opening a bundle showed inverted Korean instead of English; flip revealed normal Korean. Swap mode had the reverse problem. Root cause: Compose's 3D transform lacks backface culling — both faces overlapped; now uses rotation-based alpha fading so only one face is dominant at any angle.
 - Fix: Replaced `isFront` conditional visibility with alpha-based blending. Front face fades out as rotation passes 90°; back face fades in from 90° to 180°. Only one face is visually dominant at any rotation angle.
+
+## [2026-10-22] Fixed FlashcardView conditional rendering — only one face visible at any rotation angle
+- Issue: Alpha blending partially helped (English visible during flip animation) but stopped frames still showed wrong content. At 0°, inverted Korean appeared on front; at 180°, normal Korean on back. Root cause: Compose's `graphicsLayer` 3D transforms don't support z-ordering or backface culling — both faces rendered simultaneously regardless of alpha, causing the rotated-back face to visually overlay the front face.
+- Fix: Replaced alpha-based approach with strict conditional rendering. Front face renders only when `rotation <= 90f`; back face only when `rotation >= 90f`. At exactly 90° both render (brief, edge-on moment during animation, imperceptible). This guarantees no overlap at any other angle.
 
 ## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
 - Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.

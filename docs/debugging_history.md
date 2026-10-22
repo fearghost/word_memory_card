@@ -127,7 +127,8 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 
 ## [2026-10-22] FlashcardView: English word invisible, inverted Korean shown on bundle load
 - Issue: On opening a bundle, English word was not visible; instead an "inverted" Korean word appeared. After flip, normal Korean showed. In Swap mode, the behavior was reversed. Root cause: Compose's 3D transform lacks proper backface culling/z-ordering — both faces rendered simultaneously without correct occlusion, causing the back face (with rotationY=180) to appear mirrored/inverted through the front face.
-- Fix: Replaced isFront-based conditional visibility with alpha-based blending. Front face fades out as rotation passes 90°, back face fades in from 90° to 180°. This ensures only one face is visually dominant at any rotation angle, eliminating the double-render/mirror artifact.
+- Fix v1: Replaced isFront-based conditional visibility with alpha-based blending. Front face fades out as rotation passes 90°, back face fades in from 90° to 180°. This ensured only one face was visually dominant at any rotation angle, eliminating the double-render/mirror artifact. Partial success: flip animation improved (English visible during rotation) but stopped frames still showed wrong content.
+- Fix v2: Replaced alpha blending with strict conditional rendering. Front face renders only when `rotation <= 90f`; back face only when `rotation >= 90f`. At exactly 90° both render (brief, imperceptible edge-on moment). Guarantees no overlap at any other angle.
 
 ## [2026-10-22] CI compilation errors after UI/UX redesign — icon path mismatches and missing imports
 - Issue: 4 files used `Icons.AutoMirrored.Filled.*` for icons not available in AutoMirrored (Book, CloudUpload, Save).
