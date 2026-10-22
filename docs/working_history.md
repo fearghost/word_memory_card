@@ -125,6 +125,13 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - Added WordDao.getAllBundlesWithWordCount() query for bundle-level word count statistics
 - Added WordRepository.getAllBundlesWithWordCount() to expose the new DAO method
 
+## [2026-10-22] Fixed CI compilation errors after UI/UX redesign commit
+- HomeScreen.kt: `Icons.AutoMirrored.Filled.Book` → `Icons.Default.Book` (Book icon not in AutoMirrored)
+- NewBundleScreen.kt: `Icons.AutoMirrored.Filled.CloudUpload` → `Icons.Default.CloudUpload` (CloudUpload not in AutoMirrored)
+- ReviewEditScreen.kt: `Icons.AutoMirrored.Filled.Save` → `Icons.Default.Save` (2 occurrences, Save not in AutoMirrored)
+- ParsingScreen.kt: Added missing `import androidx.compose.foundation.clickable`
+- StudyScreen.kt: Removed `FilterDefaults.border()` parameter from FilterChip (API doesn't exist in Compose BOM 2024.05.00)
+
 ## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
 - Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.
 - Resolved CI compilation error in `AndroidTtsManager.kt` caused by an incorrect `speak` function signature.

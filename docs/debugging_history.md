@@ -125,3 +125,11 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 - Issue: `StudyScreen.kt` failed to compile due to missing `kotlinx.coroutines.delay` import.
   Fix: Added the missing import.
 
+## [2026-10-22] CI compilation errors after UI/UX redesign — icon path mismatches and missing imports
+- Issue: 4 files used `Icons.AutoMirrored.Filled.*` for icons not available in AutoMirrored (Book, CloudUpload, Save).
+  Fix: Changed to `Icons.Default.*` in all usage sites.
+- Issue: ParsingScreen.kt missing `clickable` import from `androidx.compose.foundation`.
+  Fix: Added `import androidx.compose.foundation.clickable`.
+- Issue: StudyScreen.kt used `FilterDefaults.border()` which doesn't exist in Compose BOM 2024.05.00.
+  Fix: Removed the `border` parameter from both `FilterChip` usages (uses default styling).
+
