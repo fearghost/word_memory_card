@@ -60,17 +60,12 @@ jobs:
           -dname "CN=WordMemory, OU=Dev, O=WordMemory, L=Seoul, ST=Gyeonggi, C=KR"
 
     # ── Sign release APK with apksigner ──────────────────────────
-    - name: Install Android SDK build-tools
-      uses: android-actions/setup-android@v3
-      with:
-        packages: 'build-tools;34.0.0'
-
-    - name: Sign Release APK
+    - name: Install build-tools & sign APK
       run: |
         mkdir -p artifacts
-        # Find the unsigned release APK
+        sdkmanager "build-tools;34.0.0" 2>/dev/null || true
         UNSIGNED=$(find app/build/outputs/apk/release/ -name '*.apk' | head -1)
-        apksigner sign \
+        /usr/local/lib/android/sdk/build-tools/34.0.0/apksigner sign \
           --ks signing.jks \
           --ks-pass pass:wordmemory123 \
           --ks-key-alias wordmemory \
