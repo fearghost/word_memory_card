@@ -1,0 +1,37 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+  <!-- Card shadow -->
+  <path
+      android:fillColor="#00000020"
+      android:pathData="M30,26 L74,26 C76.2,26 78,27.8 78,30 L78,78 C78,80.2 76.2,82 74,82 L30,82 C27.8,82 26,80.2 26,78 L26,30 C26,27.8 27.8,26 30,26 Z"
+      android:translateX="2"
+      android:translateY="3"/>
+
+  <!-- Card body -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M30,24 L74,24 C76.2,24 78,25.8 78,28 L78,76 C78,78.2 76.2,80 74,80 L30,80 C27.8,80 26,78.2 26,76 L26,28 C26,25.8 27.8,24 30,24 Z"/>
+
+  <!-- Card accent bar -->
+  <path
+      android:fillColor="#6200EE"
+      android:pathData="M26,24 L78,24 L78,34 L26,34 Z"/>
+
+  <!-- Letter A -->
+  <path
+      android:fillColor="#6200EE"
+      android:pathData="M45,44 L51,44 L54,52 L57,44 L63,44 L56,60 L63,60 L63,64 L54,64 L54,60 L47,60 L47,64 L38,64 L38,60 L45,44 Z M51,48 L49,52.5 L53,52.5 Z"/>
+
+  <!-- Word lines -->
+  <path
+      android:fillColor="#B0BEC5"
+      android:pathData="M38,70 L68,70 L68,71 L38,71 Z"/>
+  <path
+      android:fillColor="#CFD8DC"
+      android:pathData="M42,74 L64,74 L64,75 L42,75 Z"/>
+
+</vector>
