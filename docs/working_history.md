@@ -136,9 +136,9 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - Issue: Opening a bundle showed inverted Korean instead of English; flip revealed normal Korean. Swap mode had the reverse problem. Root cause: Compose's 3D transform lacks backface culling — both faces overlapped; now uses rotation-based alpha fading so only one face is dominant at any angle.
 - Fix: Replaced `isFront` conditional visibility with alpha-based blending. Front face fades out as rotation passes 90°; back face fades in from 90° to 180°. Only one face is visually dominant at any rotation angle.
 
-## [2026-10-22] Replaced app icon with flashcard design
-- Old: `ic_launcher.xml` had `<background>` set to `#6200EE` (purple) but `<foreground>` was completely transparent → showed as a blank purple square.
-- New: Created `ic_launcher_foreground.xml` vector drawable — white rounded card with purple accent bar, bold "A" letter (vocabulary), and two thin lines below (word definition). Matches the flashcard/learning app theme.
+## [2026-10-22] Replaced app icon with flashcard design (letter A on card)
+- Created `ic_launcher_foreground.xml` vector drawable — white rounded card with purple accent bar, bold "A" letter (vocabulary), and two thin lines below (word definition). Matches the flashcard/learning app theme.
+- Fixed: `ic_launcher.xml` had `<foreground>` set to `@android:color/transparent` (blank). Changed to `@drawable/ic_launcher_foreground`.
 
 ## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
 - Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.
