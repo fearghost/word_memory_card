@@ -139,6 +139,8 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 ## [2026-10-22] Replaced app icon with flashcard design (letter A on card)
 - Created `ic_launcher_foreground.xml` vector drawable — white rounded card with purple accent bar, bold "A" letter (vocabulary), and two thin lines below (word definition). Matches the flashcard/learning app theme.
 - Fixed: `ic_launcher.xml` had `<foreground>` set to `@android:color/transparent` (blank). Changed to `@drawable/ic_launcher_foreground`.
+- Root cause of failed renders: initial vector paths used invalid Android vector syntax (`C` with radius values instead of cubic bezier coordinates). Rewrote all paths using proper `A` (arc) commands for rounded corners.
+- Added `ic_launcher_round.xml` (required for round launcher icons on API 26+).
 
 ## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
 - Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.
