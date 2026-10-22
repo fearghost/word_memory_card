@@ -132,6 +132,10 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - ParsingScreen.kt: Added missing `import androidx.compose.foundation.clickable`
 - StudyScreen.kt: Removed `FilterDefaults.border()` parameter from FilterChip (API doesn't exist in Compose BOM 2024.05.00)
 
+## [2026-10-22] Fixed FlashcardView alpha blending for proper 3D face visibility
+- Issue: Opening a bundle showed inverted Korean instead of English; flip revealed normal Korean. Swap mode had the reverse problem. Root cause: Compose's 3D transform lacks backface culling — both card faces rendered simultaneously without correct z-ordering occlusion, causing the rotated-back face to appear mirrored through the front.
+- Fix: Replaced `isFront` conditional visibility with alpha-based blending. Front face fades out as rotation passes 90°; back face fades in from 90° to 180°. Only one face is visually dominant at any rotation angle.
+
 ## [2026-10-19] Resolved TTS automatic playback issues and CI build failures
 - Fixed TTS automatic playback issue where the first word was being played multiple times due to a blind retry logic. Implemented a smart retry mechanism that monitors the `isSpeaking` state.
 - Resolved CI compilation error in `AndroidTtsManager.kt` caused by an incorrect `speak` function signature.
