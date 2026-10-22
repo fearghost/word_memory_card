@@ -43,16 +43,40 @@ jobs:
         name: app-debug-apk
         path: artifacts/WordMemoryDbg.apk
 
-    # ── Release build (unsigned — add signing keys to enable) ────
+    # ── Release build ────────────────────────────────────────────
     - name: Build Release APK
       run: ./gradlew assembleRelease --no-daemon
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-    - name: Rename & copy Release APK
+    - name: Generate signing keystore
+      run: |
+        keytool -genkeypair -v \
+          -keystore signing.jks \
+          -storepass wordmemory123 \
+          -keypass wordmemory123 \
+          -alias wordmemory \
+          -keyalg RSA -keysize 2048 -validity 10000 \
+          -dname "CN=WordMemory, OU=Dev, O=WordMemory, L=Seoul, ST=Gyeonggi, C=KR"
+
+    # ── Sign release APK with apksigner ──────────────────────────
+    - name: Install Android SDK build-tools
+      uses: android-actions/setup-android@v3
+      with:
+        packages: 'build-tools;34.0.0'
+
+    - name: Sign Release APK
       run: |
         mkdir -p artifacts
-        find app/build/outputs/apk/release/ -name '*.apk' -exec cp {} artifacts/WordMemory.apk \;
+        # Find the unsigned release APK
+        UNSIGNED=$(find app/build/outputs/apk/release/ -name '*.apk' | head -1)
+        apksigner sign \
+          --ks signing.jks \
+          --ks-pass pass:wordmemory123 \
+          --ks-key-alias wordmemory \
+          --key-pass pass:wordmemory123 \
+          "$UNSIGNED"
+        cp "$UNSIGNED" artifacts/WordMemory.apk
 
     - name: Upload Release APK artifact
       uses: actions/upload-artifact@v4
