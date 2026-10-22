@@ -148,3 +148,13 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - Fixed a missing `kotlinx.coroutines.delay` import in `StudyScreen.kt`.
 - Verified fix via successful GitHub Actions CI build.
 
+## [2026-10-22] README update, dual debug/release CI builds, signed release APK upload to GitHub Releases
+- Updated `README.md` with app description, feature list, usage flow diagram, tech stack table, and build/CD info.
+- Modified `.github/workflows/android_ci.yml` to build both Debug and Release APKs in a single run.
+  - Debug APK renamed to `WordMemoryDbg.apk`.
+  - Release APK renamed to `WordMemory.apk`, signed with CI-generated keystore + `apksigner`.
+- Added `permissions: contents: write` to workflow for GitHub Release creation.
+- Added `.gitignore` to exclude build artifacts, IDE files, and signing keys.
+- Created GitHub Release `v1.0.0` with `WordMemory.apk` uploaded.
+  - URL: https://github.com/fearghost/word_memory_card/releases/tag/v1.0.0
+
