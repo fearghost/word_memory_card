@@ -28,7 +28,7 @@ class LocalDictionaryMatcher(
                 val matchInOCR = koreanMeanings.find { it.contains(dictionaryMeaning, ignoreCase = true) }
                 
                 if (matchInOCR != null) {
-                    matchedPairs.add(ParsedWord(englishWord, matchInOCR))
+                    matchedPairs.add(ParsedWord(word = englishWord, meaning = matchInOCR))
                 }
             }
         }

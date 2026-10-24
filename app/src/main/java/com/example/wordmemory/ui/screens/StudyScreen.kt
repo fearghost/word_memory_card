@@ -74,7 +74,14 @@ fun StudyScreen(
             CircularProgressIndicator()
         }
     } else if (words.isEmpty()) {
-        EmptyStateScreen(onComplete, "No words in this bundle!")
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("No words in this bundle!", style = MaterialTheme.typography.titleLarge)
+                Button(onClick = onComplete, modifier = Modifier.padding(top = 16.dp)) {
+                    Text("Back")
+                }
+            }
+        }
     } else {
         ThreeTabStudyScreen(
             words = words,
@@ -215,6 +222,7 @@ private fun WordListItem(
     onSpeak: (String) -> Unit
 ) {
     var isDifficult by remember { mutableStateOf(word.isDifficult) }
+    val scope = rememberCoroutineScope()
 
     Card(
         modifier = Modifier
@@ -247,7 +255,9 @@ private fun WordListItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {
                     isDifficult = !isDifficult
-                    repository.toggleWordDifficult(word.id, bundleId, isDifficult)
+                    scope.launch {
+                        repository.toggleWordDifficult(word.id, bundleId, isDifficult)
+                    }
                 }) {
                     Icon(
                         imageVector = if (isDifficult) Icons.Default.Star else Icons.Default.StarBorder,
@@ -349,7 +359,7 @@ fun StudyModeTab(
         ) {
             FilterChip(
                 selected = isSwapped,
-                onClick = onSwapChange,
+                onClick = { onSwapChange(!isSwapped) },
                 label = { Text("↔ Swap") }
             )
         }
@@ -479,7 +489,9 @@ private fun StudyCardArea(
             IconButton(
                 onClick = {
                     val currentWord = words[pagerState.currentPage]
-                    repository.toggleWordDifficult(currentWord.id, bundleId, !currentWord.isDifficult)
+                    scope.launch {
+                        repository.toggleWordDifficult(currentWord.id, bundleId, !currentWord.isDifficult)
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
