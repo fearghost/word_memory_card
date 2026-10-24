@@ -16,8 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.platform.LocalTextStyle
+import androidx.compose.ui.text.LocalTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
@@ -74,23 +73,18 @@ fun StudyScreen(
     } else if (words.isEmpty()) {
         EmptyStateScreen(onComplete, "No words in this bundle!")
     } else {
-        CompositionLocalProvider(
-            LocalTextStyle provides TextStyle(
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
-                letterSpacing = MaterialTheme.typography.bodyLarge.letterSpacing,
-                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
-                textAlign = MaterialTheme.typography.bodyLarge.textAlign,
-                textDecoration = MaterialTheme.typography.bodyLarge.textDecoration,
-                platformStyle = MaterialTheme.typography.bodyLarge.platformStyle,
-                fontScale = currentFontScale,
-                color = MaterialTheme.typography.bodyLarge.color,
-                background = MaterialTheme.typography.bodyLarge.background,
-                blendMode = MaterialTheme.typography.bodyLarge.blendMode
+        // Apply scaled font size via LocalTextStyle composition local
+        val fontSizeMultiplier = when (fontScaleIndex) {
+            0 -> 1.0f
+            1 -> 1.25f
+            else -> 1.5f
+        }
+        val scaledTextStyle = remember(fontSizeMultiplier) {
+            MaterialTheme.typography.bodyLarge.copy(
+                fontSize = MaterialTheme.typography.bodyLarge.fontSize * fontSizeMultiplier
             )
-        ) {
+        }
+        androidx.compose.material3.CompositionLocalProvider(LocalTextStyle provides scaledTextStyle) {
             StudyScreenContent(
                 words = words,
                 ttsManager = ttsManager,
