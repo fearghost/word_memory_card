@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
@@ -36,6 +37,9 @@ fun StudyScreen(
     var isLoading by remember { mutableStateOf(true) }
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
+    var fontScaleIndex by remember { mutableIntStateOf(1) } // 0=1.0x, 1=1.25x, 2=1.5x
+    val fontScales = listOf(1.0f, 1.25f, 1.5f)
+    val currentFontScale = fontScales[fontScaleIndex]
     val isTtsReady by ttsManager.isReady.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -69,22 +73,28 @@ fun StudyScreen(
     } else if (words.isEmpty()) {
         EmptyStateScreen(onComplete, "No words in this bundle!")
     } else {
-        StudyScreenContent(
-            words = words,
-            ttsManager = ttsManager,
-            isTtsReady = isTtsReady,
-            isSwapped = isSwapped,
-            isRotated = isRotated,
-            onCardClick = { isRotated = !isRotated },
-            onSwapToggle = { isSwapped = !isSwapped },
-            onSpeak = { word ->
-                scope.launch {
-                    ttsManager.speak(word)
-                }
-            },
-            onBack = onComplete,
-            wordCount = words.size
-        )
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(fontScale = currentFontScale)
+        ) {
+            StudyScreenContent(
+                words = words,
+                ttsManager = ttsManager,
+                isTtsReady = isTtsReady,
+                isSwapped = isSwapped,
+                isRotated = isRotated,
+                fontScaleIndex = fontScaleIndex,
+                onFontScaleChange = { fontScaleIndex = it },
+                onCardClick = { isRotated = !isRotated },
+                onSwapToggle = { isSwapped = !isSwapped },
+                onSpeak = { word ->
+                    scope.launch {
+                        ttsManager.speak(word)
+                    }
+                },
+                onBack = onComplete,
+                wordCount = words.size
+            )
+        }
     }
 }
 
@@ -143,6 +153,8 @@ fun StudyScreenContent(
     isTtsReady: Boolean,
     isSwapped: Boolean,
     isRotated: Boolean,
+    fontScaleIndex: Int,
+    onFontScaleChange: (Int) -> Unit,
     onCardClick: () -> Unit,
     onSwapToggle: () -> Unit,
     onSpeak: (String) -> Unit,
@@ -167,6 +179,28 @@ fun StudyScreenContent(
         ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.Default.Close, contentDescription = "Close")
+            }
+            
+            // Font scale +/- buttons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { onFontScaleChange((fontScaleIndex - 1).coerceAtLeast(0)) }) {
+                    Text("A-", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+                }
+                Text(
+                    text = when (fontScaleIndex) {
+                        0 -> "S"
+                        1 -> "M"
+                        else -> "L"
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                IconButton(onClick = { onFontScaleChange((fontScaleIndex + 1).coerceAtMost(2)) }) {
+                    Text("A+", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+                }
             }
             
             // Progress indicator
