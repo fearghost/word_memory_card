@@ -59,6 +59,8 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
 
     override fun speak(text: String) {
         if (isInitialized) {
+            // Stop any ongoing speech to prevent overlap
+            tts?.stop()
             // Use the specific utteranceId to allow tracking via UtteranceProgressListener
             // We pass null for the Bundle parameter to use the 4-argument version
             tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)

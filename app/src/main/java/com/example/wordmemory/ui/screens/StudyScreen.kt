@@ -1,6 +1,5 @@
 package com.example.wordmemory.ui.screens
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,8 +8,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -18,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
@@ -37,53 +33,32 @@ fun StudyScreen(
 ) {
     var words by remember { mutableStateOf<List<ParsedWord>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var currentIndex by remember { mutableIntStateOf(0) }
-    var selectedLocale by remember { mutableStateOf(Locale.US) }
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
     val isTtsReady by ttsManager.isReady.collectAsState()
-    var isSpeaking by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    // Fixed locale: US only
+    LaunchedEffect(bundleId) {
+        ttsManager.setAccent(Locale.US)
+    }
 
     LaunchedEffect(bundleId) {
         words = repository.getWordsByBundle(bundleId)
         isLoading = false
     }
 
-    LaunchedEffect(selectedLocale) {
-        ttsManager.setAccent(selectedLocale)
-    }
-
-    LaunchedEffect(currentIndex) {
-        isRotated = false
-    }
-
-    // Combined effect to handle initial playback and subsequent navigation safely
-    LaunchedEffect(isTtsReady, words, currentIndex, isRotated, isSwapped) {
-        if (isTtsReady && words.isNotEmpty() && !isRotated && !isSwapped) {
-            delay(200)
-            
-            if (currentIndex == 0) {
-                ttsManager.speak(words[currentIndex].word)
-                
-                // Wait up to 1.5s to see if it actually starts speaking
-                var started = false
-                val startTime = System.currentTimeMillis()
-                while (System.currentTimeMillis() - startTime < 1500) {
-                    if (isSpeaking) {
-                        started = true
-                        break
-                    }
-                    delay(100)
-                }
-                
-                if (!started) {
-                    ttsManager.speak(words[currentIndex].word)
-                }
-            } else {
-                ttsManager.speak(words[currentIndex].word)
-            }
+    // TTS on first load — simple, no race condition
+    LaunchedEffect(isTtsReady, words) {
+        if (isTtsReady && words.isNotEmpty()) {
+            delay(300)
+            ttsManager.speak(words.first().word)
         }
+    }
+
+    // Reset rotation on swap toggle
+    LaunchedEffect(isSwapped) {
+        isRotated = false
     }
 
     if (isLoading) {
@@ -92,31 +67,18 @@ fun StudyScreen(
         }
     } else if (words.isEmpty()) {
         EmptyStateScreen(onComplete, "No words in this bundle!")
-    } else if (currentIndex >= words.size) {
-        CompletionScreen(words.size, onComplete)
     } else {
         StudyScreenContent(
             words = words,
-            currentIndex = currentIndex,
-            selectedLocale = selectedLocale,
             isSwapped = isSwapped,
             isRotated = isRotated,
             onCardClick = { isRotated = !isRotated },
-            onLocaleSelect = { locale -> 
-                selectedLocale = locale
-                ttsManager.setAccent(locale)
-            },
             onSwapToggle = { isSwapped = !isSwapped },
             onSpeak = { word ->
                 scope.launch {
-                    isSpeaking = true
                     ttsManager.speak(word)
-                    delay(1500)
-                    isSpeaking = false
                 }
             },
-            onNext = { if (currentIndex < words.size - 1) currentIndex++ },
-            onPrev = { if (currentIndex > 0) currentIndex-- },
             onBack = onComplete,
             wordCount = words.size
         )
@@ -174,19 +136,17 @@ fun CompletionScreen(wordCount: Int, onComplete: () -> Unit) {
 @Composable
 fun StudyScreenContent(
     words: List<ParsedWord>,
-    currentIndex: Int,
-    selectedLocale: Locale,
     isSwapped: Boolean,
     isRotated: Boolean,
     onCardClick: () -> Unit,
-    onLocaleSelect: (Locale) -> Unit,
     onSwapToggle: () -> Unit,
     onSpeak: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
     onBack: () -> Unit,
     wordCount: Int
 ) {
+    val pagerState = rememberPagerState(pageCount = { words.size })
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -207,7 +167,7 @@ fun StudyScreenContent(
             // Progress indicator
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LinearProgressIndicator(
-                    progress = (currentIndex + 1).toFloat() / wordCount,
+                    progress = (pagerState.currentPage + 1).toFloat() / wordCount,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .height(4.dp),
@@ -216,71 +176,63 @@ fun StudyScreenContent(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${currentIndex + 1} / $wordCount",
+                    text = "${pagerState.currentPage + 1} / $wordCount",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            // Spacer for balance
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        // Locale chips row
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                listOf(Locale.US, Locale.UK, Locale.forLanguageTag("en-AU")).forEach { locale ->
-                    val label = when(locale.country) {
-                        "US" -> "🇺🇸 US"
-                        "GB" -> "🇬🇧 UK"
-                        "AU" -> "🇦🇺 AU"
-                        else -> locale.country
-                    }
-                    FilterChip(
-                        selected = selectedLocale == locale,
-                        onClick = { onLocaleSelect(locale) },
-                        label = { Text(label, style = MaterialTheme.typography.labelMedium) }
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                }
-                FilterChip(
-                    selected = isSwapped,
-                    onClick = onSwapToggle,
-                    label = { Text("↔ Swap", style = MaterialTheme.typography.labelMedium) }
-                )
-            }
+        // Swap toggle chip only (locale chips removed)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            FilterChip(
+                selected = isSwapped,
+                onClick = onSwapToggle,
+                label = { Text("↔ Swap", style = MaterialTheme.typography.labelMedium) }
+            )
         }
 
-        // Flashcard
+        // Flashcard with HorizontalPager (swipe navigation)
         Box(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.7f),
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                FlashcardView(
-                    word = words[currentIndex],
-                    isRotated = isRotated,
-                    isSwapped = isSwapped,
-                    onCardClick = onCardClick,
-                    modifier = Modifier.fillMaxSize()
-                )
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.7f),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    FlashcardView(
+                        word = words[page],
+                        isRotated = if (page == pagerState.currentPage) isRotated else false,
+                        isSwapped = isSwapped,
+                        onCardClick = {
+                            if (page == pagerState.currentPage) {
+                                onCardClick()
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             // Speak button overlay
             IconButton(
-                onClick = { onSpeak(words[currentIndex].word) },
+                onClick = { onSpeak(words[pagerState.currentPage].word) },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
@@ -297,49 +249,34 @@ fun StudyScreenContent(
             }
         }
 
-        // Navigation buttons
+        // Page indicator dots (replaces Previous/Next buttons)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
-            NavigationButton(
-                onClick = onPrev,
-                enabled = currentIndex > 0,
-                icon = Icons.AutoMirrored.Filled.ArrowBack,
-                label = "Previous",
-                modifier = Modifier.weight(1f)
-            )
-            NavigationButton(
-                onClick = onNext,
-                enabled = currentIndex < wordCount - 1,
-                icon = Icons.AutoMirrored.Filled.ArrowForward,
-                label = "Next",
-                modifier = Modifier.weight(1f)
-            )
+            for (i in words.indices) {
+                val isSelected = i == pagerState.currentPage
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .size(if (isSelected) 10.dp else 8.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (isSelected) 
+                                MaterialTheme.colorScheme.primary 
+                            else 
+                                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                        )
+                )
+            }
         }
     }
-}
 
-@Composable
-fun NavigationButton(
-    onClick: () -> Unit,
-    enabled: Boolean,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier.height(56.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = ButtonDefaults.buttonColors(
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Icon(icon, contentDescription = label, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(label, fontWeight = FontWeight.Medium)
+    // TTS on page change — uses ttsManager.isSpeaking internally
+    LaunchedEffect(pagerState.currentPage, isTtsReady) {
+        if (isTtsReady && words.isNotEmpty() && pagerState.currentPage < words.size) {
+            delay(200)
+            ttsManager.speak(words[pagerState.currentPage].word)
+        }
     }
 }
