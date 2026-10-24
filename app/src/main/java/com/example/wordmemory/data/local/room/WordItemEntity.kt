@@ -21,5 +21,6 @@ data class WordItemEntity(
     val bundleId: Long,
     val word: String,
     val meaning: String,
-    val imagePath: String?
+    val imagePath: String?,
+    val isDifficult: Boolean = false
 )

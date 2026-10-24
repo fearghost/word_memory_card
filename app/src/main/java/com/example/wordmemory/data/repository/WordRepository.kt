@@ -38,7 +38,30 @@ class WordRepository(private val wordDao: WordDao) {
     suspend fun getWordsByBundle(bundleId: Long): List<ParsedWord> {
         val entities = wordDao.getItemsByBundle(bundleId)
         return entities.map { 
-            ParsedWord(word = it.word, meaning = it.meaning, imagePath = it.imagePath) 
+            ParsedWord(
+                id = it.id,
+                word = it.word,
+                meaning = it.meaning,
+                imagePath = it.imagePath,
+                isDifficult = it.isDifficult
+            ) 
         }
+    }
+
+    suspend fun getDifficultWordsByBundle(bundleId: Long): List<ParsedWord> {
+        val entities = wordDao.getDifficultItemsByBundle(bundleId)
+        return entities.map { 
+            ParsedWord(
+                id = it.id,
+                word = it.word,
+                meaning = it.meaning,
+                imagePath = it.imagePath,
+                isDifficult = it.isDifficult
+            ) 
+        }
+    }
+
+    suspend fun toggleWordDifficult(itemId: Long, bundleId: Long, isDifficult: Boolean) {
+        wordDao.toggleDifficult(itemId, bundleId, isDifficult)
     }
 }

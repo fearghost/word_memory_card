@@ -33,6 +33,12 @@ interface WordDao {
     @Query("SELECT * FROM word_items WHERE bundleId = :bundleId")
     suspend fun getItemsByBundle(bundleId: Long): List<WordItemEntity>
 
+    @Query("SELECT * FROM word_items WHERE bundleId = :bundleId AND isDifficult = 1")
+    suspend fun getDifficultItemsByBundle(bundleId: Long): List<WordItemEntity>
+
+    @Query("UPDATE word_items SET isDifficult = :isDifficult WHERE id = :itemId AND bundleId = :bundleId")
+    suspend fun toggleDifficult(itemId: Long, bundleId: Long, isDifficult: Boolean)
+
     @Query("DELETE FROM word_items WHERE bundleId = :bundleId")
     suspend fun deleteItemsByBundleId(bundleId: Long)
 
