@@ -155,3 +155,9 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 - Attempt 3: LocalTextStyle from `androidx.compose.ui.text` + remember + CompositionLocalProvider → remember doesn't allow composable calls; CompositionLocalProvider unresolved
 - Final fix: Pass fontScaleMultiplier as Float param through StudyScreen → FlashcardView → CardContent; scale headlineLarge.fontSize directly
 
+## [2026-10-24] Bundle Renewal Phase 3/4 — CI errors (2 retries)
+- Error 1: `LocalDictionaryMatcher.kt:31` — ParsedWord signature changed (id first), positional args failed. Fix: named params `ParsedWord(word = ..., meaning = ...)`
+- Error 2: `StudyScreen.kt:77` — `EmptyStateScreen` unresolved reference. Fix: inline Box+Column with Text+Button
+- Error 3: `StudyScreen.kt:250,482` — suspend function `toggleWordDifficult` called from non-suspend context (composable). Fix: wrapped in `scope.launch { ... }`
+- Error 4: `StudyScreen.kt:352` — `onClick = onSwapChange` type mismatch `(Boolean) -> Unit` vs expected `() -> Unit`. Fix: `onClick = { onSwapChange(!isSwapped) }`
+

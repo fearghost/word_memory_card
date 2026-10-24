@@ -182,3 +182,15 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
   - Applies multiplier to `MaterialTheme.typography.headlineLarge.fontSize * fontScaleMultiplier`
   - No LocalTextStyle/CompositionLocalProvider used (incompatible with Compose BOM 2024.05.00)
 
+## [2026-10-24] Bundle Renewal Phase 3/4 — 3-Tab Structure + Difficult Marking
+- **DB Schema**: WordItemEntity.kt — `isDifficult: Boolean = false` 필드 추가 (Room auto-migration)
+- **WordDao.kt**: `getDifficultItemsByBundle()` + `toggleDifficult()` 쿼리 추가
+- **WordRepository.kt**: `getDifficultWordsByBundle()` + `toggleWordDifficult()` 메서드 추가
+- **ParsedWord.kt**: `id: Long = 0` + `isDifficult: Boolean = false` 필드 추가 (기존 코드 호환)
+- **LocalDictionaryMatcher.kt**: ParsedWord 생성 시 positional → named parameter로 수정 (signature 변경 대응)
+- **StudyScreen.kt**: 전면 재구성 — TabRow + 3개 탭 (693 lines)
+  - List 탭: LazyColumn 단어 목록, TTS 재생, difficult星标 토글 (scope.launch wrapping)
+  - Study 탭: 기존 플래시카드 유지, A-/A+ 폰트 조절, difficult 필터 칩,星标 오버레이 버튼
+  - Test 탭: 한국어 의미 표시 → 영어 입력 → 정답/오답 피드백 + 점수 계산
+- CI 오류 수정 (2회 retry): EmptyStateScreen 미존재 → inline Box+Column 대체, suspend 함수 scope.launch로 감싸기, onSwapChange 타입 불일치修正
+
