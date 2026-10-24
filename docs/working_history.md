@@ -174,3 +174,11 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
   - Background color distinction (primaryContainer/tertiaryContainer) retained for visual feedback
   - Removed unused Icon import
 
+## [2026-10-24] Bundle Renewal Phase 2 — Font Size Scaling UI
+- StudyScreen.kt: Added fontScaleIndex state + A-/A+ buttons in top bar (S/M/L indicators)
+  - Passes `fontScaleMultiplier` to StudyScreenContent → FlashcardView
+  - Three levels: S(1.0x), M(1.25x), L(1.5x)
+- FlashcardView.kt: Added `fontScaleMultiplier` parameter to FlashcardView + CardContent
+  - Applies multiplier to `MaterialTheme.typography.headlineLarge.fontSize * fontScaleMultiplier`
+  - No LocalTextStyle/CompositionLocalProvider used (incompatible with Compose BOM 2024.05.00)
+

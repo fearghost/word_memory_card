@@ -149,3 +149,9 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 ## [2026-10-24] Bundle Renewal Phase 1 — Card UI label removal (no CI issues)
 - FlashcardView.kt: Removed label Text from card faces, simplified CardContent to single Text element
 
+## [2026-10-24] Bundle Renewal Phase 2 — Font scaling approach fixes (3 CI retries)
+- Attempt 1: LocalTextStyle from `androidx.compose.ui.platform` → unresolved reference
+- Attempt 2: Explicit TextStyle constructor with fontScale/blendMode params → not available in Compose BOM 2024.05.00
+- Attempt 3: LocalTextStyle from `androidx.compose.ui.text` + remember + CompositionLocalProvider → remember doesn't allow composable calls; CompositionLocalProvider unresolved
+- Final fix: Pass fontScaleMultiplier as Float param through StudyScreen → FlashcardView → CardContent; scale headlineLarge.fontSize directly
+
