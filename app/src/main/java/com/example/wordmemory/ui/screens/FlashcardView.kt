@@ -25,6 +25,7 @@ fun FlashcardView(
     word: ParsedWord,
     isRotated: Boolean,
     isSwapped: Boolean,
+    fontScaleMultiplier: Float,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,6 +47,7 @@ fun FlashcardView(
             CardContent(
                 word = if (isSwapped) word.meaning else word.word,
                 isFront = true,
+                fontScaleMultiplier = fontScaleMultiplier,
                 onCardClick = onCardClick,
                 modifier = Modifier.fillMaxSize()
             )
@@ -56,6 +58,7 @@ fun FlashcardView(
             CardContent(
                 word = if (isSwapped) word.word else word.meaning,
                 isFront = false,
+                fontScaleMultiplier = fontScaleMultiplier,
                 onCardClick = onCardClick,
                 modifier = Modifier
                     .fillMaxSize()
@@ -71,6 +74,7 @@ fun FlashcardView(
 private fun CardContent(
     word: String,
     isFront: Boolean,
+    fontScaleMultiplier: Float,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,9 +85,10 @@ private fun CardContent(
             .clickable(onClick = onCardClick),
         contentAlignment = Alignment.Center
     ) {
+        val scaledFontSize = MaterialTheme.typography.headlineLarge.fontSize * fontScaleMultiplier
         Text(
             text = word,
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(fontSize = scaledFontSize),
             color = if (isFront) 
                 MaterialTheme.colorScheme.onPrimaryContainer 
             else 

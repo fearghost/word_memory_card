@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.LocalTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
@@ -38,8 +37,6 @@ fun StudyScreen(
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
     var fontScaleIndex by remember { mutableIntStateOf(1) } // 0=1.0x, 1=1.25x, 2=1.5x
-    val fontScales = listOf(1.0f, 1.25f, 1.5f)
-    val currentFontScale = fontScales[fontScaleIndex]
     val isTtsReady by ttsManager.isReady.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -73,37 +70,24 @@ fun StudyScreen(
     } else if (words.isEmpty()) {
         EmptyStateScreen(onComplete, "No words in this bundle!")
     } else {
-        // Apply scaled font size via LocalTextStyle composition local
-        val fontSizeMultiplier = when (fontScaleIndex) {
-            0 -> 1.0f
-            1 -> 1.25f
-            else -> 1.5f
-        }
-        val scaledTextStyle = remember(fontSizeMultiplier) {
-            MaterialTheme.typography.bodyLarge.copy(
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize * fontSizeMultiplier
-            )
-        }
-        androidx.compose.material3.CompositionLocalProvider(LocalTextStyle provides scaledTextStyle) {
-            StudyScreenContent(
-                words = words,
-                ttsManager = ttsManager,
-                isTtsReady = isTtsReady,
-                isSwapped = isSwapped,
-                isRotated = isRotated,
-                fontScaleIndex = fontScaleIndex,
-                onFontScaleChange = { fontScaleIndex = it },
-                onCardClick = { isRotated = !isRotated },
-                onSwapToggle = { isSwapped = !isSwapped },
-                onSpeak = { word ->
-                    scope.launch {
-                        ttsManager.speak(word)
-                    }
-                },
-                onBack = onComplete,
-                wordCount = words.size
-            )
-        }
+        StudyScreenContent(
+            words = words,
+            ttsManager = ttsManager,
+            isTtsReady = isTtsReady,
+            isSwapped = isSwapped,
+            isRotated = isRotated,
+            fontScaleIndex = fontScaleIndex,
+            onFontScaleChange = { fontScaleIndex = it },
+            onCardClick = { isRotated = !isRotated },
+            onSwapToggle = { isSwapped = !isSwapped },
+            onSpeak = { word ->
+                scope.launch {
+                    ttsManager.speak(word)
+                }
+            },
+            onBack = onComplete,
+            wordCount = words.size
+        )
     }
 }
 
@@ -173,6 +157,13 @@ fun StudyScreenContent(
     val pagerState = rememberPagerState(pageCount = { words.size })
     val scope = rememberCoroutineScope()
 
+    // Font scale multiplier (0=1.0x, 1=1.25x, 2=1.5x)
+    val fontScaleMultiplier = when (fontScaleIndex) {
+        0 -> 1.0f
+        1 -> 1.25f
+        else -> 1.5f
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -189,7 +180,7 @@ fun StudyScreenContent(
             IconButton(onClick = onBack) {
                 Icon(Icons.Default.Close, contentDescription = "Close")
             }
-            
+
             // Font scale +/- buttons
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -211,7 +202,7 @@ fun StudyScreenContent(
                     Text("A+", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
                 }
             }
-            
+
             // Progress indicator
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LinearProgressIndicator(
@@ -268,6 +259,7 @@ fun StudyScreenContent(
                         word = words[page],
                         isRotated = if (page == pagerState.currentPage) isRotated else false,
                         isSwapped = isSwapped,
+                        fontScaleMultiplier = fontScaleMultiplier,
                         onCardClick = {
                             if (page == pagerState.currentPage) {
                                 onCardClick()
@@ -310,9 +302,9 @@ fun StudyScreenContent(
                         .size(if (isSelected) 10.dp else 8.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isSelected) 
-                                MaterialTheme.colorScheme.primary 
-                            else 
+                            if (isSelected)
+                                MaterialTheme.colorScheme.primary
+                            else
                                 MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                         )
                 )
