@@ -167,3 +167,10 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
   - AndroidTtsManager.kt: Added `tts?.stop()` before `speak()` to prevent overlapping speech
 - CI: Fixed experimental API errors by adding proper @OptIn annotations + passing ttsManager/isTtsReady as parameters to StudyScreenContent
 
+## [2026-10-24] Bundle Renewal Phase 1 — Card UI Label Removal
+- FlashcardView.kt: Removed "Word"/"Meaning" label Text from card faces
+  - CardContent simplified: removed `label` parameter, removed Column layout + Spacer
+  - Front face now shows only English word (headlineLarge), back face shows only Korean meaning
+  - Background color distinction (primaryContainer/tertiaryContainer) retained for visual feedback
+  - Removed unused Icon import
+
