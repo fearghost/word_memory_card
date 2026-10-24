@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +45,6 @@ fun FlashcardView(
         if (rotation <= 90f) {
             CardContent(
                 word = if (isSwapped) word.meaning else word.word,
-                label = if (isSwapped) "Meaning" else "Word",
                 isFront = true,
                 onCardClick = onCardClick,
                 modifier = Modifier.fillMaxSize()
@@ -57,7 +55,6 @@ fun FlashcardView(
         if (rotation >= 90f) {
             CardContent(
                 word = if (isSwapped) word.word else word.meaning,
-                label = if (isSwapped) "Word" else "Meaning",
                 isFront = false,
                 onCardClick = onCardClick,
                 modifier = Modifier
@@ -73,7 +70,6 @@ fun FlashcardView(
 @Composable
 private fun CardContent(
     word: String,
-    label: String,
     isFront: Boolean,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -85,32 +81,17 @@ private fun CardContent(
             .clickable(onClick = onCardClick),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        Text(
+            text = word,
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (isFront) 
+                MaterialTheme.colorScheme.onPrimaryContainer 
+            else 
+                MaterialTheme.colorScheme.onTertiaryContainer,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            maxLines = 4,
             modifier = Modifier.padding(24.dp)
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = if (isFront) 
-                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f) 
-                else 
-                    MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = word,
-                style = MaterialTheme.typography.headlineMedium,
-                color = if (isFront) 
-                    MaterialTheme.colorScheme.onPrimaryContainer 
-                else 
-                    MaterialTheme.colorScheme.onTertiaryContainer,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 4
-            )
-        }
+        )
     }
 }
