@@ -1,5 +1,6 @@
 package com.example.wordmemory.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -70,6 +71,8 @@ fun StudyScreen(
     } else {
         StudyScreenContent(
             words = words,
+            ttsManager = ttsManager,
+            isTtsReady = isTtsReady,
             isSwapped = isSwapped,
             isRotated = isRotated,
             onCardClick = { isRotated = !isRotated },
@@ -132,10 +135,12 @@ fun CompletionScreen(wordCount: Int, onComplete: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun StudyScreenContent(
     words: List<ParsedWord>,
+    ttsManager: TtsManager,
+    isTtsReady: Boolean,
     isSwapped: Boolean,
     isRotated: Boolean,
     onCardClick: () -> Unit,
