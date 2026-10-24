@@ -158,3 +158,12 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - Created GitHub Release `v1.0.0` with `WordMemory.apk` uploaded.
   - URL: https://github.com/fearghost/word_memory_card/releases/tag/v1.0.0
 
+## [2026-10-24] Bundle Renewal Phase 0 — TTS Bug Fix + Locale US Fixed + Swipe Pager Nav
+- StudyScreen.kt: Complete rewrite for Phase 0 of bundle_renewal_plan.md
+  - Removed locale selection FilterChips (🇺🇸/🇬🇧/🇦🇺) — fixed to Locale.US only
+  - Fixed TTS auto-play bug: removed race-condition `while` loop, replaced with simple `delay(300)` + `speak()` in LaunchedEffect
+  - Replaced Previous/Next buttons with HorizontalPager swipe navigation + page indicator dots
+  - Added @OptIn(ExperimentalFoundationApi::class) for HorizontalPager/rememberPagerState
+  - AndroidTtsManager.kt: Added `tts?.stop()` before `speak()` to prevent overlapping speech
+- CI: Fixed experimental API errors by adding proper @OptIn annotations + passing ttsManager/isTtsReady as parameters to StudyScreenContent
+

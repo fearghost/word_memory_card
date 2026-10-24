@@ -138,3 +138,11 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 - Issue: StudyScreen.kt used `FilterDefaults.border()` which doesn't exist in Compose BOM 2024.05.00.
   Fix: Removed the `border` parameter from both `FilterChip` usages (uses default styling).
 
+## [2026-10-24] Bundle Renewal Phase 0 — CI errors and fixes
+- Issue: HorizontalPager/rememberPagerState/LinearProgressIndicator flagged as experimental foundation APIs → compilation failure
+  Fix: Added `@OptIn(ExperimentalFoundationApi::class)` import and annotation to StudyScreenContent, plus to StudyScreen function
+- Issue: Unresolved reference `isTtsReady` and `ttsManager` in StudyScreenContent's TTS LaunchedEffect (scope issue)
+  Fix: Passed `ttsManager: TtsManager` and `isTtsReady: Boolean` as parameters from parent StudyScreen composable
+- Issue: TTS auto-play bug — first word played repeatedly due to race condition in while-loop checking local `isSpeaking` state
+  Fix: Removed while loop entirely; simplified to `delay(300)` + `speak()` in LaunchedEffect. Added `tts?.stop()` before speak() in AndroidTtsManager
+
