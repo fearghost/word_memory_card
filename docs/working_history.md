@@ -192,5 +192,14 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
   - List 탭: LazyColumn 단어 목록, TTS 재생, difficult星标 토글 (scope.launch wrapping)
   - Study 탭: 기존 플래시카드 유지, A-/A+ 폰트 조절, difficult 필터 칩,星标 오버레이 버튼
   - Test 탭: 한국어 의미 표시 → 영어 입력 → 정답/오답 피드백 + 점수 계산
-- CI 오류 수정 (2회 retry): EmptyStateScreen 미존재 → inline Box+Column 대체, suspend 함수 scope.launch로 감싸기, onSwapChange 타입 불일치修正
+|- CI 오류 수정 (2회 retry): EmptyStateScreen 미존재 → inline Box+Column 대체, suspend 함수 scope.launch로 감싸기, onSwapChange 타입 불일치修正
+
+## [2026-10-25] Bundle Renewal Plan — All Phases (P0–P4) Complete Checkpoint
+- Verified all 6 plan items are implemented and committed:
+  - P0: TTS bug fix + Locale.US fixed + HorizontalPager swipe navigation
+  - P1: FlashcardView label removal (clean word/meaning faces)
+  - P2: Font size scaling UI (A-/A+ buttons, S/M/L levels)
+  - P3: 3-tab structure (List / Study / Test) with TabRow
+  - P4: Difficult marking — DB schema, DAO, Repository, ViewModel methods
+- Uncommitted diff: minor debug log in GeminiCloudLLMClient.kt (not committed)
 
