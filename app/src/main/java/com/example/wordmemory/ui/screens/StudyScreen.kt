@@ -437,77 +437,81 @@ private fun StudyCardArea(
             )
         }
 
-        // Flashcard
+        // Flashcard area
         Box(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                Card(
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .fillMaxHeight(0.7f)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    Card(
+                        modifier = Modifier.fillMaxSize(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        FlashcardView(
+                            word = words[page],
+                            isRotated = if (page == pagerState.currentPage) isRotated else false,
+                            isSwapped = isSwapped,
+                            fontScaleMultiplier = fontScaleMultiplier,
+                            onCardClick = {
+                                if (page == pagerState.currentPage) onRotationChange(!isRotated)
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+
+                // Speak button — aligned to card area
+                IconButton(
+                    onClick = { onSpeak(words[pagerState.currentPage].word) },
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight(0.7f),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f))
+                        .size(44.dp)
                 ) {
-                    FlashcardView(
-                        word = words[page],
-                        isRotated = if (page == pagerState.currentPage) isRotated else false,
-                        isSwapped = isSwapped,
-                        fontScaleMultiplier = fontScaleMultiplier,
-                        onCardClick = {
-                            if (page == pagerState.currentPage) onRotationChange(!isRotated)
-                        },
-                        modifier = Modifier.fillMaxSize()
+                    Icon(
+                        Icons.AutoMirrored.Filled.VolumeUp,
+                        contentDescription = "Listen",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
-            }
 
-            // Speak button
-            IconButton(
-                onClick = { onSpeak(words[pagerState.currentPage].word) },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f))
-                    .size(48.dp)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.VolumeUp,
-                    contentDescription = "Listen",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            // Difficult mark button (overlay on card)
-            IconButton(
-                onClick = {
+                // Difficult mark button — aligned to card area
+                IconButton(
+                    onClick = {
+                        val currentWord = words[pagerState.currentPage]
+                        scope.launch {
+                            repository.toggleWordDifficult(currentWord.id, bundleId, !currentWord.isDifficult)
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.8f))
+                        .size(38.dp)
+                ) {
                     val currentWord = words[pagerState.currentPage]
-                    scope.launch {
-                        repository.toggleWordDifficult(currentWord.id, bundleId, !currentWord.isDifficult)
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.8f))
-                    .size(40.dp)
-            ) {
-                val currentWord = words[pagerState.currentPage]
-                Icon(
-                    if (currentWord.isDifficult) Icons.Default.Star else Icons.Default.StarBorder,
-                    contentDescription = "Toggle difficult",
-                    tint = if (currentWord.isDifficult) MaterialTheme.colorScheme.onTertiaryContainer
-                           else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp)
-                )
+                    Icon(
+                        if (currentWord.isDifficult) Icons.Default.Star else Icons.Default.StarBorder,
+                        contentDescription = "Toggle difficult",
+                        tint = if (currentWord.isDifficult) MaterialTheme.colorScheme.onTertiaryContainer
+                               else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
             }
         }
 

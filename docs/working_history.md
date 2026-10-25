@@ -203,3 +203,8 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
   - P4: Difficult marking — DB schema, DAO, Repository, ViewModel methods
 - Uncommitted diff: minor debug log in GeminiCloudLLMClient.kt (not committed)
 
+## [2026-10-25] StudyScreen Flashcard Centering Fix
+- Issue: Flashcard area was visually shifted to the left instead of being centered
+- Root cause: IconButton overlays were children of outer Box (contentAlignment=Center) but Card+Pager were in an inner Box (fillMaxWidth(0.9f).fillMaxHeight(0.7f)) — different alignment coordinate systems
+- Fix: Moved Speak and Difficult IconButton inside the inner Box so all elements share the same 0.9f×0.7f card-area coordinate system; reduced padding from 16dp to 8dp for tighter fit
+
