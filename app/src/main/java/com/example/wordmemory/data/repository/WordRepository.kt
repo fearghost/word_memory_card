@@ -48,6 +48,20 @@ class WordRepository(private val wordDao: WordDao) {
         }
     }
 
+    fun getWordsByBundleFlow(bundleId: Long): Flow<List<ParsedWord>> {
+        return wordDao.getWordsByBundleFlow(bundleId).map { entities ->
+            entities.map { 
+                ParsedWord(
+                    id = it.id,
+                    word = it.word,
+                    meaning = it.meaning,
+                    imagePath = it.imagePath,
+                    isDifficult = it.isDifficult
+                ) 
+            }
+        }
+    }
+
     suspend fun getDifficultWordsByBundle(bundleId: Long): List<ParsedWord> {
         val entities = wordDao.getDifficultItemsByBundle(bundleId)
         return entities.map { 

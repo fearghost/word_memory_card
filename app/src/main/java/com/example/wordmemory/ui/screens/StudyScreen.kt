@@ -10,7 +10,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Close
@@ -22,15 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardOptions
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.TextFieldValue
 import com.example.wordmemory.domain.model.ParsedWord
 import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.tts.TtsManager
 import java.util.Locale
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,8 +36,6 @@ fun StudyScreen(
     ttsManager: TtsManager,
     onComplete: () -> Unit
 ) {
-    var words by remember { mutableStateOf<List<ParsedWord>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
     var fontScaleIndex by remember { mutableIntStateOf(1) }
@@ -53,16 +47,15 @@ fun StudyScreen(
         ttsManager.setAccent(Locale.US)
     }
 
-    LaunchedEffect(bundleId) {
-        words = repository.getWordsByBundle(bundleId)
-        isLoading = false
-    }
+    // Reactive word list — automatically refreshes when DB changes (e.g. toggle difficult)
+    val wordsFlow = repository.getWordsByBundleFlow(bundleId)
+    var words by remember { mutableStateOf<List<ParsedWord>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
 
-    // TTS on first load — simple, no race condition
-    LaunchedEffect(isTtsReady, words) {
-        if (isTtsReady && words.isNotEmpty()) {
-            delay(300)
-            ttsManager.speak(words.first().word)
+    LaunchedEffect(wordsFlow) {
+        wordsFlow.collect { fetched ->
+            words = fetched
+            isLoading = false
         }
     }
 
@@ -153,10 +146,7 @@ fun ThreeTabStudyScreen(
             0 -> WordListTab(
                 words = words,
                 bundleId = bundleId,
-                repository = repository,
-                ttsManager = ttsManager,
-                isTtsReady = isTtsReady,
-                onSpeak = onSpeak
+                repository = repository
             )
             1 -> StudyModeTab(
                 words = words,
@@ -176,8 +166,7 @@ fun ThreeTabStudyScreen(
             2 -> TestModeTab(
                 words = words,
                 bundleId = bundleId,
-                repository = repository,
-                onSpeak = onSpeak
+                repository = repository
             )
         }
     }
@@ -190,10 +179,7 @@ fun ThreeTabStudyScreen(
 fun WordListTab(
     words: List<ParsedWord>,
     bundleId: Long,
-    repository: WordRepository,
-    ttsManager: TtsManager,
-    isTtsReady: Boolean,
-    onSpeak: (String) -> Unit
+    repository: WordRepository
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -204,10 +190,7 @@ fun WordListTab(
             WordListItem(
                 word = word,
                 bundleId = bundleId,
-                repository = repository,
-                ttsManager = ttsManager,
-                isTtsReady = isTtsReady,
-                onSpeak = onSpeak
+                repository = repository
             )
         }
     }
@@ -218,10 +201,7 @@ fun WordListTab(
 private fun WordListItem(
     word: ParsedWord,
     bundleId: Long,
-    repository: WordRepository,
-    ttsManager: TtsManager,
-    isTtsReady: Boolean,
-    onSpeak: (String) -> Unit
+    repository: WordRepository
 ) {
     var isDifficult by remember { mutableStateOf(word.isDifficult) }
     val scope = rememberCoroutineScope()
@@ -229,7 +209,7 @@ private fun WordListItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { if (isTtsReady) onSpeak(word.word) },
+            .clickable {},
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
@@ -267,14 +247,6 @@ private fun WordListItem(
                         tint = if (isDifficult) MaterialTheme.colorScheme.inverseSurface
                                else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(onClick = { if (isTtsReady) onSpeak(word.word) }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.VolumeUp,
-                        contentDescription = "Listen",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -538,13 +510,8 @@ private fun StudyCardArea(
         }
     }
 
-    // TTS on page change
-    LaunchedEffect(pagerState.currentPage, isTtsReady) {
-        if (isTtsReady && words.isNotEmpty() && pagerState.currentPage < words.size) {
-            delay(200)
-            ttsManager.speak(words[pagerState.currentPage].word)
-        }
-    }
+    // TTS on page change — manual only, triggered by Speak button above
+    // Removed auto-speak on page change so user controls when to hear pronunciation
 
     // Reset rotation on swap toggle
     LaunchedEffect(isSwapped) {
@@ -566,8 +533,7 @@ private data class TestResult(
 fun TestModeTab(
     words: List<ParsedWord>,
     bundleId: Long,
-    repository: WordRepository,
-    onSpeak: (String) -> Unit
+    repository: WordRepository
 ) {
     var phase by remember { mutableStateOf(TestPhase.Testing) }
     var currentIndex by remember { mutableIntStateOf(0) }
@@ -592,7 +558,6 @@ fun TestModeTab(
                     phase = TestPhase.Results
                 }
             },
-            onSpeak = onSpeak,
             onStartOver = {
                 phase = TestPhase.Testing
                 currentIndex = 0
@@ -621,7 +586,6 @@ private fun TestingPhase(
     userInput: TextFieldValue,
     onUserInput: (TextFieldValue) -> Unit,
     onNext: () -> Unit,
-    onSpeak: (String) -> Unit,
     onStartOver: () -> Unit
 ) {
     Column(
@@ -675,19 +639,6 @@ private fun TestingPhase(
             )
         }
 
-        // Speak button for Korean meaning
-        IconButton(
-            onClick = { onSpeak(words[currentIndex].meaning) },
-            modifier = Modifier.size(40.dp)
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.VolumeUp,
-                contentDescription = "Listen",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-
         // Input field — auto-complete disabled
         OutlinedTextField(
             value = userInput,
@@ -695,8 +646,8 @@ private fun TestingPhase(
             label = { Text("Type the English word") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next,
+            keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
+                imeAction = androidx.compose.ui.text.input.ImeAction.Next,
                 autoCorrect = false
             )
         )

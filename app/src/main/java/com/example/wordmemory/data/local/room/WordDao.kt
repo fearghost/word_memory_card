@@ -33,6 +33,9 @@ interface WordDao {
     @Query("SELECT * FROM word_items WHERE bundleId = :bundleId")
     suspend fun getItemsByBundle(bundleId: Long): List<WordItemEntity>
 
+    @Query("SELECT * FROM word_items WHERE bundleId = :bundleId")
+    fun getWordsByBundleFlow(bundleId: Long): Flow<List<WordItemEntity>>
+
     @Query("SELECT * FROM word_items WHERE bundleId = :bundleId AND isDifficult = 1")
     suspend fun getDifficultItemsByBundle(bundleId: Long): List<WordItemEntity>
 
