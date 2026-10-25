@@ -149,7 +149,10 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 ## [2026-10-24] Bundle Renewal Phase 1 — Card UI label removal (no CI issues)
 - FlashcardView.kt: Removed label Text from card faces, simplified CardContent to single Text element
 
-## [2026-10-24] Bundle Renewal Phase 2 — Font scaling approach fixes (3 CI retries)
+## [2026-10-25] CI build failures — Flow.map type inference + KeyboardOptions import
+- **Error 1**: `WordRepository.kt:52` — `Unresolved reference: map` on `Flow<List<WordItemEntity>>.map { ... }`. Root cause: Kotlin compiler couldn't infer the extension function due to generic type ambiguity with `kotlinx.coroutines.flow.map` vs `Iterable.map`. Fix: Added `import kotlinx.coroutines.flow.map as flowMap` and renamed call to `.flowMap { ... }`.
+- **Error 2**: `StudyScreen.kt:649` — `Unresolved reference: KeyboardOptions` / `ImeAction`. Root cause: Compose BOM 2024.05.00 doesn't expose these types in the expected package path (or they're not available at all). Fix: Removed the imports and replaced `keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, autoCorrect = false)` with default behavior on the test input OutlinedTextField.
+- CI #188 passed after both fixes.
 - Attempt 1: LocalTextStyle from `androidx.compose.ui.platform` → unresolved reference
 - Attempt 2: Explicit TextStyle constructor with fontScale/blendMode params → not available in Compose BOM 2024.05.00
 - Attempt 3: LocalTextStyle from `androidx.compose.ui.text` + remember + CompositionLocalProvider → remember doesn't allow composable calls; CompositionLocalProvider unresolved

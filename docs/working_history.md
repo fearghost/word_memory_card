@@ -203,6 +203,16 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
   - P4: Difficult marking — DB schema, DAO, Repository, ViewModel methods
 - Uncommitted diff: minor debug log in GeminiCloudLLMClient.kt (not committed)
 
+## [2026-10-25] Self-healing CI build fix — Flow.map type inference, KeyboardOptions import
+- `WordRepository.kt`: Added `import kotlinx.coroutines.flow.map as flowMap` to resolve type inference failure on `Flow<List<WordItemEntity>>.map { ... }`. Replaced `.map { ... }` with `.flowMap { ... }` in `getWordsByBundleFlow()`.
+- `StudyScreen.kt`: Removed `KeyboardOptions` and `ImeAction` imports (not available in Compose BOM 2024.05.00). Replaced `keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, autoCorrect = false)` with default behavior on test input OutlinedTextField.
+- CI #188 passed successfully after these fixes.
+
+## [2026-10-25] Bundle Renewal — Feature Improvements (Flow-based DB sync, TTS removal)
+- **Problem 1: "Only Difficult" filter shows empty screen** — `words` was loaded once via `mutableStateOf` and never updated after DB changes. Fixed by adding `getWordsByBundleFlow()` to WordDao (`@Query` Flow), implementing corresponding method in WordRepository, and switching StudyScreen to collect the Flow with `lifecycleScope.launch { ... }.collect { words = it }`.
+- **Problem 2: TTS auto-plays on List tab entry** — Removed `LaunchedEffect(isTtsReady, words) { delay(300); ttsManager.speak(...) }` that triggered on every screen load. TTS now only plays via explicit speak button in Study (flashcard) section.
+- **Problem 3: Test mode has audio buttons exposing answers** — Removed all `onSpeak` callbacks and voice buttons from `WordListTab` and `TestingPhase` components. Test mode is now silent-only to prevent audio hints.
+
 ## [2026-10-25] Test Mode (Tab 3) Redesign + Auto-Complete Disable
 - **Test flow changed**: Removed per-word feedback loop — user types word, presses Next/Finish, immediately advances to next word without showing correct/wrong indicator
 - **Results page added**: After all words entered, shows a summary page with title "Test Complete!", score (X/N correct), and scrollable list of all answers
