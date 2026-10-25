@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.wordmemory.domain.model.ParsedWord
@@ -552,6 +554,13 @@ private fun StudyCardArea(
 
 // ==================== TAB 3: Test Mode ====================
 
+/** Represents one test row: the word info + user's answer */
+private data class TestResult(
+    val word: ParsedWord,
+    val userAnswer: String,
+    val isCorrect: Boolean
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TestModeTab(
@@ -560,12 +569,61 @@ fun TestModeTab(
     repository: WordRepository,
     onSpeak: (String) -> Unit
 ) {
+    var phase by remember { mutableStateOf(TestPhase.Testing) }
     var currentIndex by remember { mutableIntStateOf(0) }
     var userInput by remember { mutableStateOf(TextFieldValue("")) }
-    var feedback by remember { mutableStateOf<TestFeedback?>(null) }
-    var score by remember { mutableIntStateOf(0) }
-    val scope = rememberCoroutineScope()
+    val results = remember { mutableStateListOf<TestResult>() }
 
+    when (phase) {
+        TestPhase.Testing -> TestingPhase(
+            words = words,
+            currentIndex = currentIndex,
+            userInput = userInput,
+            onUserInput = { userInput = it },
+            onNext = {
+                val isCorrect = userInput.text.trim().equals(
+                    words[currentIndex].word, ignoreCase = true
+                )
+                results.add(TestResult(words[currentIndex], userInput.text.trim(), isCorrect))
+                if (currentIndex < words.size - 1) {
+                    currentIndex++
+                    userInput = TextFieldValue("")
+                } else {
+                    phase = TestPhase.Results
+                }
+            },
+            onSpeak = onSpeak,
+            onStartOver = {
+                phase = TestPhase.Testing
+                currentIndex = 0
+                userInput = TextFieldValue("")
+                results.clear()
+            }
+        )
+        TestPhase.Results -> ResultsPage(
+            results = results,
+            onRestart = {
+                phase = TestPhase.Testing
+                currentIndex = 0
+                userInput = TextFieldValue("")
+                results.clear()
+            }
+        )
+    }
+}
+
+private enum class TestPhase { Testing, Results }
+
+@Composable
+private fun TestingPhase(
+    words: List<ParsedWord>,
+    currentIndex: Int,
+    userInput: TextFieldValue,
+    onUserInput: (TextFieldValue) -> Unit,
+    onNext: () -> Unit,
+    onSpeak: (String) -> Unit,
+    onStartOver: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -573,7 +631,7 @@ fun TestModeTab(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // Score display
+        // Header
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -585,7 +643,7 @@ fun TestModeTab(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Score: $score / ${words.size}",
+                "${currentIndex + 1} / ${words.size}",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -630,70 +688,163 @@ fun TestModeTab(
             )
         }
 
-        // Input field
+        // Input field — auto-complete disabled
         OutlinedTextField(
             value = userInput,
-            onValueChange = { userInput = it },
+            onValueChange = { onUserInput(it) },
             label = { Text("Type the English word") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            enabled = feedback == null
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                autoCorrect = false
+            )
         )
 
-        // Feedback
-        feedback?.let { fb ->
-            Text(
-                text = if (fb.correct) "✅ Correct!" else "❌ Answer: ${words[currentIndex].word}",
-                style = MaterialTheme.typography.titleMedium,
-                color = if (fb.correct) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.error
-            )
-        }
-
-        // Action buttons
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        // Next button
+        Button(
+            onClick = onNext,
+            enabled = userInput.text.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (feedback != null && currentIndex < words.size - 1) {
-                Button(
-                    onClick = {
-                        currentIndex++
-                        userInput = TextFieldValue("")
-                        feedback = null
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Next")
-                }
-            } else if (feedback != null && currentIndex == words.size - 1) {
-                // All done — show restart
-                Button(
-                    onClick = {
-                        currentIndex = 0
-                        userInput = TextFieldValue("")
-                        feedback = null
-                        score = 0
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Restart")
-                }
-            } else if (feedback == null) {
-                Button(
-                    onClick = {
-                        val correct = userInput.text.trim().equals(words[currentIndex].word, ignoreCase = true)
-                        feedback = TestFeedback(correct)
-                        if (correct) score++
-                    },
-                    enabled = userInput.text.isNotBlank(),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Submit")
-                }
+            if (currentIndex < words.size - 1) {
+                Text("Next")
+            } else {
+                Text("Finish")
             }
+        }
+
+        // Restart button at bottom
+        TextButton(onClick = onStartOver) {
+            Text("Start Over")
         }
     }
 }
 
-private data class TestFeedback(val correct: Boolean)
+@Composable
+private fun ResultsPage(
+    results: List<TestResult>,
+    onRestart: () -> Unit
+) {
+    val correctCount = results.count { it.isCorrect }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Title & score
+        Text(
+            "Test Complete!",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            "$correctCount / ${results.size} correct",
+            style = MaterialTheme.typography.titleLarge,
+            color = if (correctCount == results.size) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface
+        )
+
+        // Results list
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            items(results, key = { it.word.id }) { result ->
+                ResultRow(result = result)
+            }
+        }
+
+        // Restart button
+        Button(
+            onClick = onRestart,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Restart Test")
+        }
+    }
+}
+
+@Composable
+private fun ResultRow(result: TestResult) {
+    val isCorrect = result.isCorrect
+    val containerColor = if (isCorrect) {
+        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+    } else {
+        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f)
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            // Meaning
+            Text(
+                text = result.word.meaning,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Answer row: correct answer | user answer
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Answer",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = result.word.word,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (isCorrect) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        }
+                    )
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Your Answer",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = result.userAnswer.ifEmpty { "(empty)" },
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (isCorrect) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        }
+                    )
+                }
+            }
+
+            // Status icon
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Text(
+                    if (isCorrect) "✅" else "❌",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+    }
+}

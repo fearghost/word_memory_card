@@ -81,8 +81,10 @@ class GeminiCloudLLMClient(
                 Log.d("GeminiCloudLLMClient", "Received Response: $responseText")
 
                 // Extract the JSON array using Regex to handle cases where the LLM adds conversational text
-                val jsonRegex = Regex("\\[[\\s\\S]*\\]")
+                val jsonRegex = Regex("""\[[\s\S]*\]""")
                 val cleanedJson = jsonRegex.find(responseText)?.value ?: responseText
+
+                Log.d("GeminiCloudLLMClient", "Extracted JSON: ${cleanedJson.take(500)}")
 
                 val result = parseJsonResponse(cleanedJson)
                 
