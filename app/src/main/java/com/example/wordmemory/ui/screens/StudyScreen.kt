@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.wordmemory.domain.model.ParsedWord
@@ -646,8 +648,8 @@ private fun TestingPhase(
             label = { Text("Type the English word") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
-                imeAction = androidx.compose.ui.text.input.ImeAction.Next,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
                 autoCorrect = false
             )
         )

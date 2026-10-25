@@ -3,6 +3,7 @@ package com.example.wordmemory.data.repository
 import com.example.wordmemory.data.local.room.*
 import com.example.wordmemory.domain.model.ParsedWord
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map as flowMap
 
 class WordRepository(private val wordDao: WordDao) {
     
@@ -49,7 +50,7 @@ class WordRepository(private val wordDao: WordDao) {
     }
 
     fun getWordsByBundleFlow(bundleId: Long): Flow<List<ParsedWord>> {
-        return wordDao.getWordsByBundleFlow(bundleId).map { entities ->
+        return wordDao.getWordsByBundleFlow(bundleId).flowMap { entities ->
             entities.map { 
                 ParsedWord(
                     id = it.id,
