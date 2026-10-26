@@ -203,7 +203,6 @@ private fun WordListItem(
     bundleId: Long,
     repository: WordRepository
 ) {
-    var isDifficult by remember { mutableStateOf(word.isDifficult) }
     val scope = rememberCoroutineScope()
 
     Card(
@@ -236,15 +235,14 @@ private fun WordListItem(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = {
-                    isDifficult = !isDifficult
                     scope.launch {
-                        repository.toggleWordDifficult(word.id, bundleId, isDifficult)
+                        repository.toggleWordDifficult(word.id, bundleId, !word.isDifficult)
                     }
                 }) {
                     Icon(
-                        imageVector = if (isDifficult) Icons.Default.Star else Icons.Default.StarBorder,
+                        imageVector = if (word.isDifficult) Icons.Default.Star else Icons.Default.StarBorder,
                         contentDescription = "Toggle difficult",
-                        tint = if (isDifficult) MaterialTheme.colorScheme.inverseSurface
+                        tint = if (word.isDifficult) MaterialTheme.colorScheme.inverseSurface
                                else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(24.dp)
                     )
