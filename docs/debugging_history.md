@@ -158,6 +158,12 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 - Attempt 3: LocalTextStyle from `androidx.compose.ui.text` + remember + CompositionLocalProvider → remember doesn't allow composable calls; CompositionLocalProvider unresolved
 - Final fix: Pass fontScaleMultiplier as Float param through StudyScreen → FlashcardView → CardContent; scale headlineLarge.fontSize directly
 
+## [2026-10-26] Difficult word toggle crash — All 3 root causes fixed and CI verified
+
+- **Fix 1 (PagerIndexOutOfBoundsException)**: `StudyScreen.kt` — Added `LaunchedEffect(words.size) { pagerState.currentPage = 0 }` to reset page index when word count changes. Star/speak onClick handlers wrapped with `if (idx in words.indices)` bounds check. CI #40259739560 passed.
+- **Fix 2 (LazyColumn stale key)**: `StudyScreen.kt` — Removed `remember { mutableStateOf(word.isDifficult) }` from `WordListItem`. Changed to read `word.isDifficult` directly from DB parameter. Ensures LazyColumn items always show current DB state. CI #40261530105 passed.
+- **Fix 3 (Race condition — Icon rendering)**: `StudyScreen.kt` — Star icon in `IconButton` lambda changed from `val currentWord = words[pagerState.currentPage]` (unprotected direct access) to `val idx = pagerState.currentPage; if (idx in words.indices && words[idx].isDifficult)`. Prevents crash when Flow emit during recomposition reassigns `words` list while pager still holds old index. CI #40269015740 passed.
+
 ## [2026-10-25] Difficult word toggle crash — PagerIndexOutOfBoundsException + LazyColumn stale key
 - **Issue**: Toggling ⭐ (difficult) button in List/Study tabs causes frequent crashes.
 - **Root cause 1**: `rememberPagerState(pageCount = { words.size })` does not reset when `words.size` changes (filter toggle or DB update). `pagerState.currentPage` exceeds new bounds → `ArrayIndexOutOfBoundsException` on `words[pagerState.currentPage]`.

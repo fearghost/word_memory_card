@@ -213,6 +213,12 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - **Problem 2: TTS auto-plays on List tab entry** — Removed `LaunchedEffect(isTtsReady, words) { delay(300); ttsManager.speak(...) }` that triggered on every screen load. TTS now only plays via explicit speak button in Study (flashcard) section.
 - **Problem 3: Test mode has audio buttons exposing answers** — Removed all `onSpeak` callbacks and voice buttons from `WordListTab` and `TestingPhase` components. Test mode is now silent-only to prevent audio hints.
 
+## [2026-10-26] Difficult word toggle crash — All 3 root causes fixed and CI verified
+
+- **Root cause 1 fix**: `StudyScreen.kt` — Added `LaunchedEffect(words.size)` to reset `pagerState.currentPage = 0` when word count changes. Star/speak onClick handlers now use `if (idx in words.indices)` bounds check before accessing `words[idx]`. CI #40259739560 passed.
+- **Root cause 2 fix**: `StudyScreen.kt` — Removed `remember { mutableStateOf(word.isDifficult) }` from `WordListItem`; changed to read `word.isDifficult` directly from DB. Ensures LazyColumn items always show current DB state. CI #40261530105 passed.
+- **Root cause 3 fix**: `StudyScreen.kt` — Star icon in `StudyCardArea` IconButton lambda changed from direct `words[pagerState.currentPage]` access to `val idx = pagerState.currentPage; if (idx in words.indices && words[idx].isDifficult)` bounds check. Prevents crash when Flow emit reassigns `words` during recomposition. CI #40269015740 passed.
+
 ## [2026-10-25] Difficult word toggle crash analysis — 3 root causes identified
 - **Root cause 1 (PagerIndexOutOfBoundsException)**: `StudyCardArea`의 `rememberPagerState(pageCount = { words.size })`가 필터 변경(Only Difficult ON/OFF) 또는 star 토글 후 words.size 변화 시 reset되지 않음. `pagerState.currentPage`가 새 리스트 크기를 초과하면 `words[pagerState.currentPage]` 접근 시 crash.
 - **Root cause 2 (LazyColumn key stale)**: `WordListTab.items(words, key = { it.id })`에서 DB 변경 → Flow emit → words 갱신 시 Compose는 key 불변 항목을 재사용하려 하지만, `WordListItem` 내부 `isDifficult`가 `remember`로 로컬 저장되어 있어 DB 상태와 동기화 안 됨. inconsistent state crash 가능.
