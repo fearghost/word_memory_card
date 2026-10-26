@@ -158,7 +158,12 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 - Attempt 3: LocalTextStyle from `androidx.compose.ui.text` + remember + CompositionLocalProvider → remember doesn't allow composable calls; CompositionLocalProvider unresolved
 - Final fix: Pass fontScaleMultiplier as Float param through StudyScreen → FlashcardView → CardContent; scale headlineLarge.fontSize directly
 
-## [2026-10-24] Bundle Renewal Phase 3/4 — CI errors (2 retries)
+## [2026-10-25] Difficult word toggle crash — PagerIndexOutOfBoundsException + LazyColumn stale key
+- **Issue**: Toggling ⭐ (difficult) button in List/Study tabs causes frequent crashes.
+- **Root cause 1**: `rememberPagerState(pageCount = { words.size })` does not reset when `words.size` changes (filter toggle or DB update). `pagerState.currentPage` exceeds new bounds → `ArrayIndexOutOfBoundsException` on `words[pagerState.currentPage]`.
+- **Root cause 2**: `WordListItem` stores `isDifficult` in local `remember { mutableStateOf(word.isDifficult) }`. After DB update + Flow emit, Compose reuses stale item with old `isDifficult` value → UI state desync.
+- **Root cause 3**: Race condition — star button reads `words[pagerState.currentPage]`, then DB update triggers Flow emit → words reassigned while pager still holds old index → crash on next access.
+- **Fix direction**: (1) Reset pagerState on filter change/words.size change; (2) Read `isDifficult` directly from DB in LazyColumn item (remove local remember); (3) Add bounds check + safe access for pager index.
 - Error 1: `LocalDictionaryMatcher.kt:31` — ParsedWord signature changed (id first), positional args failed. Fix: named params `ParsedWord(word = ..., meaning = ...)`
 - Error 2: `StudyScreen.kt:77` — `EmptyStateScreen` unresolved reference. Fix: inline Box+Column with Text+Button
 - Error 3: `StudyScreen.kt:250,482` — suspend function `toggleWordDifficult` called from non-suspend context (composable). Fix: wrapped in `scope.launch { ... }`

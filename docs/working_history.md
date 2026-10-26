@@ -213,6 +213,11 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - **Problem 2: TTS auto-plays on List tab entry** — Removed `LaunchedEffect(isTtsReady, words) { delay(300); ttsManager.speak(...) }` that triggered on every screen load. TTS now only plays via explicit speak button in Study (flashcard) section.
 - **Problem 3: Test mode has audio buttons exposing answers** — Removed all `onSpeak` callbacks and voice buttons from `WordListTab` and `TestingPhase` components. Test mode is now silent-only to prevent audio hints.
 
+## [2026-10-25] Difficult word toggle crash analysis — 3 root causes identified
+- **Root cause 1 (PagerIndexOutOfBoundsException)**: `StudyCardArea`의 `rememberPagerState(pageCount = { words.size })`가 필터 변경(Only Difficult ON/OFF) 또는 star 토글 후 words.size 변화 시 reset되지 않음. `pagerState.currentPage`가 새 리스트 크기를 초과하면 `words[pagerState.currentPage]` 접근 시 crash.
+- **Root cause 2 (LazyColumn key stale)**: `WordListTab.items(words, key = { it.id })`에서 DB 변경 → Flow emit → words 갱신 시 Compose는 key 불변 항목을 재사용하려 하지만, `WordListItem` 내부 `isDifficult`가 `remember`로 로컬 저장되어 있어 DB 상태와 동기화 안 됨. inconsistent state crash 가능.
+- **Root cause 3 (Race condition in toggle)**: `StudyCardArea`의 star 버튼에서 `val currentWord = words[pagerState.currentPage]` → DB update → Flow emit → words 재할당 사이 pager index가 유효 범위 벗어나 crash.
+
 ## [2026-10-25] Test Mode (Tab 3) Redesign + Auto-Complete Disable
 - **Test flow changed**: Removed per-word feedback loop — user types word, presses Next/Finish, immediately advances to next word without showing correct/wrong indicator
 - **Results page added**: After all words entered, shows a summary page with title "Test Complete!", score (X/N correct), and scrollable list of all answers
