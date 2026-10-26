@@ -386,6 +386,13 @@ private fun StudyCardArea(
     val pagerState = rememberPagerState(pageCount = { words.size })
     val scope = rememberCoroutineScope()
 
+    // Reset pagerState when word count changes (e.g. filter toggle, DB update)
+    LaunchedEffect(words.size) {
+        if (pagerState.currentPage >= words.size) {
+            pagerState.scrollToPage(0)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -446,7 +453,12 @@ private fun StudyCardArea(
 
                 // Speak button — aligned to card area
                 IconButton(
-                    onClick = { onSpeak(words[pagerState.currentPage].word) },
+                    onClick = {
+                        val idx = pagerState.currentPage
+                        if (idx in words.indices) {
+                            onSpeak(words[idx].word)
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)
@@ -465,9 +477,12 @@ private fun StudyCardArea(
                 // Difficult mark button — aligned to card area
                 IconButton(
                     onClick = {
-                        val currentWord = words[pagerState.currentPage]
-                        scope.launch {
-                            repository.toggleWordDifficult(currentWord.id, bundleId, !currentWord.isDifficult)
+                        val idx = pagerState.currentPage
+                        if (idx in words.indices) {
+                            val currentWord = words[idx]
+                            scope.launch {
+                                repository.toggleWordDifficult(currentWord.id, bundleId, !currentWord.isDifficult)
+                            }
                         }
                     },
                     modifier = Modifier
