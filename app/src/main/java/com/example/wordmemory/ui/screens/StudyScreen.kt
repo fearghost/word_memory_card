@@ -490,11 +490,12 @@ private fun StudyCardArea(
                         .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.8f))
                         .size(38.dp)
                 ) {
-                    val currentWord = words[pagerState.currentPage]
+                    val idx = pagerState.currentPage
                     Icon(
-                        if (currentWord.isDifficult) Icons.Default.Star else Icons.Default.StarBorder,
+                        imageVector = if (idx in words.indices && words[idx].isDifficult) Icons.Default.Star
+                                      else Icons.Default.StarBorder,
                         contentDescription = "Toggle difficult",
-                        tint = if (currentWord.isDifficult) MaterialTheme.colorScheme.onTertiaryContainer
+                        tint = if (idx in words.indices && words[idx].isDifficult) MaterialTheme.colorScheme.onTertiaryContainer
                                else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(22.dp)
                     )
