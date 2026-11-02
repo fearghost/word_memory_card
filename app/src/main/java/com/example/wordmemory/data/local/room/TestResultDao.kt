@@ -11,7 +11,7 @@ interface TestResultDao {
     @Query("SELECT * FROM test_results WHERE bundleId = :bundleId ORDER BY date DESC LIMIT :limit")
     fun getRecentTestResults(bundleId: Long, limit: Int = 5): Flow<List<TestResultEntity>>
 
-    @Query("DELETE FROM test_results WHERE id NOT IN (SELECT id FROM test_results WHERE bundleId = :bundleId ORDER BY date DESC LIMIT 5)")
+    @Query("DELETE FROM test_results WHERE id NOT IN (SELECT id FROM test_results WHERE bundleId = :bundleId ORDER BY date DESC LIMIT 5) AND bundleId = :bundleId")
     suspend fun pruneOldResults(bundleId: Long)
 
     // Alias for WordRepository compatibility

@@ -50,4 +50,14 @@ interface WordDao {
 
     @Query("SELECT COUNT(*) FROM word_items WHERE bundleId = :bundleId")
     suspend fun getWordCountByBundleId(bundleId: Long): Int
+
+    // Test result history
+    @Insert
+    suspend fun insertTestResult(result: TestResultEntity)
+
+    @Query("SELECT * FROM test_results WHERE bundleId = :bundleId ORDER BY date DESC LIMIT 5")
+    fun getRecentTestResults(bundleId: Long): Flow<List<TestResultEntity>>
+
+    @Query("DELETE FROM test_results WHERE id NOT IN (SELECT id FROM test_results WHERE bundleId = :bundleId ORDER BY date DESC LIMIT 5) AND bundleId = :bundleId")
+    suspend fun pruneOldResults(bundleId: Long)
 }

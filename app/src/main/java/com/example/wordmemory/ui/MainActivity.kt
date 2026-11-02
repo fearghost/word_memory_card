@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "word_memory_db"
-        ).build()
+        ).addMigrations(AppDatabase.MIGRATION_1_2).build()
         
         val repository = WordRepository(db.wordDao())
         val dictionaryRepository = DictionaryRepository(db.dictionaryDao())
