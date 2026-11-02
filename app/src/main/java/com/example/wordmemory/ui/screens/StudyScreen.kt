@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.wordmemory.domain.model.ParsedWord
+import com.example.wordmemory.data.local.room.TestResultEntity
 import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.tts.TtsManager
 import java.util.Locale
@@ -146,7 +148,9 @@ fun ThreeTabStudyScreen(
             0 -> WordListTab(
                 words = words,
                 bundleId = bundleId,
-                repository = repository
+                repository = repository,
+                ttsManager = ttsManager,
+                onSpeak = onSpeak
             )
             1 -> StudyModeTab(
                 words = words,
@@ -179,7 +183,9 @@ fun ThreeTabStudyScreen(
 fun WordListTab(
     words: List<ParsedWord>,
     bundleId: Long,
-    repository: WordRepository
+    repository: WordRepository,
+    ttsManager: TtsManager,
+    onSpeak: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -190,7 +196,8 @@ fun WordListTab(
             WordListItem(
                 word = word,
                 bundleId = bundleId,
-                repository = repository
+                repository = repository,
+                onSpeak = onSpeak
             )
         }
     }
@@ -201,7 +208,8 @@ fun WordListTab(
 private fun WordListItem(
     word: ParsedWord,
     bundleId: Long,
-    repository: WordRepository
+    repository: WordRepository,
+    onSpeak: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -234,6 +242,14 @@ private fun WordListItem(
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { onSpeak(word.word) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                        contentDescription = "Listen",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
                 IconButton(onClick = {
                     scope.launch {
                         repository.toggleWordDifficult(word.id, bundleId, !word.isDifficult)
@@ -298,11 +314,17 @@ fun StudyModeTab(
                     Text("A-", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
                 }
                 Text(
-                    text = when (fontScaleIndex) { 0 -> "S" 1 -> "M" else -> "L" },
+                    text = when (fontScaleIndex) {
+                        0 -> "S"
+                        1 -> "M"
+                        2 -> "L"
+                        3 -> "XL"
+                        else -> "XXL"
+                    },
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                IconButton(onClick = { onFontScaleChange((fontScaleIndex + 1).coerceAtMost(2)) }) {
+                IconButton(onClick = { onFontScaleChange((fontScaleIndex + 1).coerceAtMost(4)) }) {
                     Text("A+", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
                 }
             }
@@ -358,7 +380,13 @@ fun StudyModeTab(
                 isRotated = isRotated,
                 onRotationChange = onRotationChange,
                 isSwapped = isSwapped,
-                fontScaleMultiplier = when (fontScaleIndex) { 0 -> 1.0f 1 -> 1.25f else -> 1.5f },
+                fontScaleMultiplier = when (fontScaleIndex) {
+                    0 -> 1.0f
+                    1 -> 1.25f
+                    2 -> 1.5f
+                    3 -> 1.75f
+                    else -> 2.0f
+                },
                 onSpeak = onSpeak,
                 wordCount = displayWords.size
             )
@@ -549,44 +577,43 @@ fun TestModeTab(
     bundleId: Long,
     repository: WordRepository
 ) {
-    var phase by remember { mutableStateOf(TestPhase.Testing) }
-    var currentIndex by remember { mutableIntStateOf(0) }
-    var userInput by remember { mutableStateOf(TextFieldValue("")) }
-    val results = remember { mutableStateListOf<TestResult>() }
+    var phase by remember { mutableStateOf<TestPhase>(TestPhase.Testing) }
+    var showHistory by remember { mutableStateOf(false) }
+    val historyResults = remember { mutableStateListOf<TestResultEntity>() }
+    val scope = rememberCoroutineScope()
+    val testResults = remember { mutableStateListOf<TestResult>() }
 
-    when (phase) {
-        TestPhase.Testing -> TestingPhase(
-            words = words,
-            currentIndex = currentIndex,
-            userInput = userInput,
-            onUserInput = { userInput = it },
-            onNext = {
-                val isCorrect = userInput.text.trim().equals(
-                    words[currentIndex].word, ignoreCase = true
-                )
-                results.add(TestResult(words[currentIndex], userInput.text.trim(), isCorrect))
-                if (currentIndex < words.size - 1) {
-                    currentIndex++
-                    userInput = TextFieldValue("")
-                } else {
-                    phase = TestPhase.Results
-                }
-            },
-            onStartOver = {
-                phase = TestPhase.Testing
-                currentIndex = 0
-                userInput = TextFieldValue("")
-                results.clear()
+    // Collect test result history when viewing
+    LaunchedEffect(bundleId, showHistory) {
+        if (showHistory) {
+            repository.getTestResultsFlow(bundleId).collect { results ->
+                historyResults.clear()
+                historyResults.addAll(results)
             }
+        }
+    }
+
+    when {
+        showHistory -> HistoryView(
+            historyResults = historyResults,
+            onBack = { showHistory = false }
         )
-        TestPhase.Results -> ResultsPage(
-            results = results,
+        phase == TestPhase.Testing -> TestingPhase(
+            words = words,
+            bundleId = bundleId,
+            repository = repository,
+            scope = scope,
+            testResults = testResults,
+            onPhaseChange = { newPhase -> phase = newPhase }
+        )
+        phase == TestPhase.Results -> ResultsPage(
+            results = testResults,
             onRestart = {
+                testResults.clear()
                 phase = TestPhase.Testing
-                currentIndex = 0
-                userInput = TextFieldValue("")
-                results.clear()
-            }
+            },
+            onShowHistory = { showHistory = true },
+            hasHistory = historyResults.isNotEmpty()
         )
     }
 }
@@ -596,12 +623,40 @@ private enum class TestPhase { Testing, Results }
 @Composable
 private fun TestingPhase(
     words: List<ParsedWord>,
-    currentIndex: Int,
-    userInput: TextFieldValue,
-    onUserInput: (TextFieldValue) -> Unit,
-    onNext: () -> Unit,
-    onStartOver: () -> Unit
+    bundleId: Long,
+    repository: WordRepository,
+    scope: kotlinx.coroutines.CoroutineScope,
+    testResults: kotlin.collections.MutableList<TestResult>,
+    onPhaseChange: (TestPhase) -> Unit
 ) {
+    var currentIndex by remember { mutableIntStateOf(0) }
+    var userInput by remember { mutableStateOf(TextFieldValue("")) }
+
+    fun goNext() {
+        val isCorrect = userInput.text.trim().equals(
+            words[currentIndex].word, ignoreCase = true
+        )
+        testResults.add(TestResult(words[currentIndex], userInput.text.trim(), isCorrect))
+        if (currentIndex < words.size - 1) {
+            currentIndex++
+            userInput = TextFieldValue("")
+        } else {
+            // Save to DB before switching phase
+            scope.launch {
+                val correctCount = testResults.count { it.isCorrect }
+                val wrongWords = testResults.filter { !it.isCorrect }.map { "${it.word.word}|${it.word.meaning}" }.joinToString(";")
+                repository.saveTestResult(bundleId, testResults.size, correctCount, wrongWords)
+            }
+            onPhaseChange(TestPhase.Results)
+        }
+    }
+
+    fun restart() {
+        testResults.clear()
+        currentIndex = 0
+        userInput = TextFieldValue("")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -656,15 +711,15 @@ private fun TestingPhase(
         // Input field
         OutlinedTextField(
             value = userInput,
-            onValueChange = { onUserInput(it) },
+            onValueChange = { userInput = it },
             label = { Text("Type the English word") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
-        // Next button
+        // Next/Finish button
         Button(
-            onClick = onNext,
+            onClick = ::goNext,
             enabled = userInput.text.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -676,7 +731,7 @@ private fun TestingPhase(
         }
 
         // Restart button at bottom
-        TextButton(onClick = onStartOver) {
+        TextButton(onClick = ::restart) {
             Text("Start Over")
         }
     }
@@ -685,7 +740,9 @@ private fun TestingPhase(
 @Composable
 private fun ResultsPage(
     results: List<TestResult>,
-    onRestart: () -> Unit
+    onRestart: () -> Unit,
+    onShowHistory: () -> Unit,
+    hasHistory: Boolean
 ) {
     val correctCount = results.count { it.isCorrect }
 
@@ -719,6 +776,19 @@ private fun ResultsPage(
         ) {
             items(results, key = { it.word.id }) { result ->
                 ResultRow(result = result)
+            }
+        }
+
+        // History button
+        if (hasHistory) {
+            Button(
+                onClick = onShowHistory,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                Icon(Icons.Default.History, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("View Test History")
             }
         }
 
@@ -805,6 +875,131 @@ private fun ResultRow(result: TestResult) {
                     if (isCorrect) "✅" else "❌",
                     style = MaterialTheme.typography.titleMedium
                 )
+            }
+        }
+    }
+}
+
+// ==================== Test History View ====================
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HistoryView(
+    historyResults: List<TestResultEntity>,
+    onBack: () -> Unit
+) {
+    var expandedItemId by remember { mutableStateOf<Long?>(null) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Toolbar
+        TopAppBar(
+            title = { Text("Test History") },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.Close, contentDescription = "Close")
+                }
+            }
+        )
+
+        if (historyResults.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "No test history yet",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(historyResults, key = { it.id }) { result ->
+                    var isExpanded by remember { mutableStateOf(expandedItemId == result.id) }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isExpanded = !isExpanded },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (result.correctAnswers == result.totalQuestions) {
+                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // Summary row
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    val dateStr = java.text.SimpleDateFormat("MM/dd HH:mm", java.util.Locale.getDefault())
+                                        .format(result.date)
+                                    Text(
+                                        dateStr,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        "${result.correctAnswers} / ${result.totalQuestions} correct",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (result.correctAnswers == result.totalQuestions) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurface
+                                        }
+                                    )
+                                }
+                                Icon(
+                                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Expand"
+                                )
+                            }
+
+                            // Expanded: wrong words
+                            if (isExpanded && result.wrongWordsJson.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Wrong Words:",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Parse the pipe-separated wrong words (word|meaning)
+                                val wrongWords = result.wrongWordsJson.split(";")
+                                for ((idx, wrongWord) in wrongWords.withIndex()) {
+                                    val parts = wrongWord.split("|", limit = 2)
+                                    if (parts.size == 2) {
+                                        Text(
+                                            "${idx + 1}. ${parts[0]} — ${parts[1]}",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            } else if (isExpanded && result.correctAnswers == result.totalQuestions) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Perfect score! No wrong words.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

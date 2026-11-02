@@ -5,8 +5,9 @@ import androidx.room.RoomDatabase
 import com.example.wordmemory.data.local.room.dictionary.DictionaryDao
 import com.example.wordmemory.data.local.room.dictionary.DictionaryEntity
 
-@Database(entities = [WordBundleEntity::class, WordItemEntity::class, DictionaryEntity::class], version = 1, exportSchema = false)
+@Database(entities = [WordBundleEntity::class, WordItemEntity::class, DictionaryEntity::class, TestResultEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun wordDao(): WordDao
     abstract fun dictionaryDao(): DictionaryDao
+    abstract fun testResultDao(): TestResultDao
 }

@@ -79,4 +79,21 @@ class WordRepository(private val wordDao: WordDao) {
     suspend fun toggleWordDifficult(itemId: Long, bundleId: Long, isDifficult: Boolean) {
         wordDao.toggleDifficult(itemId, bundleId, isDifficult)
     }
+
+    // Test result history
+    suspend fun saveTestResult(bundleId: Long, totalQuestions: Int, correctAnswers: Int, wrongWordsJson: String) {
+        val result = TestResultEntity(
+            bundleId = bundleId,
+            date = System.currentTimeMillis(),
+            totalQuestions = totalQuestions,
+            correctAnswers = correctAnswers,
+            wrongWordsJson = wrongWordsJson
+        )
+        wordDao.insertTestResult(result)
+        wordDao.pruneOldResults(bundleId)
+    }
+
+    fun getTestResultsFlow(bundleId: Long): Flow<List<TestResultEntity>> {
+        return wordDao.getRecentTestResults(bundleId)
+    }
 }
