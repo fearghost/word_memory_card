@@ -1,6 +1,7 @@
 package com.example.wordmemory.data.local.room
 
 import androidx.room.Database
+import androidx.room.Migration
 import androidx.room.RoomDatabase
 import com.example.wordmemory.data.local.room.dictionary.DictionaryDao
 import com.example.wordmemory.data.local.room.dictionary.DictionaryEntity
