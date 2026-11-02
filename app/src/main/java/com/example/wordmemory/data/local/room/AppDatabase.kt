@@ -3,11 +3,12 @@ package com.example.wordmemory.data.local.room
 import androidx.room.Database
 import androidx.room.Migration
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.wordmemory.data.local.room.dictionary.DictionaryDao
 import com.example.wordmemory.data.local.room.dictionary.DictionaryEntity
 
 private val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+    override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL(
             "CREATE TABLE IF NOT EXISTS `test_results` (" +
             "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -28,6 +29,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun testResultDao(): TestResultDao
 
     companion object {
-        const val MIGRATION_1_2 = MIGRATION_1_2
+        @JvmStatic
+        val MIGRATION_1_2 = MIGRATION_1_2
     }
 }
