@@ -235,3 +235,9 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - Root cause: IconButton overlays were children of outer Box (contentAlignment=Center) but Card+Pager were in an inner Box (fillMaxWidth(0.9f).fillMaxHeight(0.7f)) — different alignment coordinate systems
 - Fix: Moved Speak and Difficult IconButton inside the inner Box so all elements share the same 0.9f×0.7f card-area coordinate system; reduced padding from 16dp to 8dp for tighter fit
 
+## [2026-11-02] Feature improvements: List TTS restore, Test history DB, XL/XXL font scale
+- **List Tab TTS restored**: `WordListItem` now shows VolumeUp icon button next to each word for pronunciation playback. Only Test tab was supposed to have audio removed.
+- **Test result history DB layer**: Created `TestResultEntity` (bundleId, date, totalQuestions, correctAnswers, wrongWordsJson), `TestResultDao` with `insert`, `getResultsByBundleFlow`, `getRecentResultsByBundle`, `pruneOldResults`; added migration to AppDatabase v2; exposed via `WordRepository.saveTestResult()` and `getTestResultsFlow()`.
+- **Test history UI**: Added history button in `TestingPhase` (top-right), `HistoryView` shows recent test results with expandable wrong word lists. Results page now has "View History" button.
+- **Font XL/XXL added**: `fontScaleIndex` expanded from 3 to 5 levels (S/M/L/XL/XXL → 1.0x/1.25x/1.5x/1.75x/2.0x). A-/A+ buttons cycle through all 5 levels with updated labels.
+

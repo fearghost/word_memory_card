@@ -175,3 +175,9 @@ Resolution: Replaced tests with label-free diagnostic tests to verify core logic
 - Error 3: `StudyScreen.kt:250,482` — suspend function `toggleWordDifficult` called from non-suspend context (composable). Fix: wrapped in `scope.launch { ... }`
 - Error 4: `StudyScreen.kt:352` — `onClick = onSwapChange` type mismatch `(Boolean) -> Unit` vs expected `() -> Unit`. Fix: `onClick = { onSwapChange(!isSwapped) }`
 
+## [2026-11-02] CI build errors — Room KSP `MissingType`, icon imports, annotation parameter
+- **Problem 1**: `ksp: error: MissingType: Element 'com.example.wordmemory.data.local.room.AppDatabase' references a type that is not present` — investigated Migration definition (anonymous object, named class, SQL syntax), removed Migration entirely, but KSP error persisted as a red herring.
+- **Problem 2**: `Unresolved reference: fallbackToDestructiveMigration` — Room annotation parameter name is `fallbackToDestructiveMigrations` (plural), but this project's Room configuration didn't support it. Removed entirely.
+- **Problem 3**: `Unresolved reference: KeyboardArrowUp/KeyboardArrowDown` — icons exist in `material-icons-extended` dependency but were missing from StudyScreen.kt imports. Added both imports.
+- **Resolution**: All 3 fixes verified by CI build success (run #41378046366).
+
