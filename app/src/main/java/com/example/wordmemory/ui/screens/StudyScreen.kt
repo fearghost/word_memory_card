@@ -585,13 +585,11 @@ fun TestModeTab(
     val scope = rememberCoroutineScope()
     val testResults = remember { mutableStateListOf<TestResult>() }
 
-    // Collect test result history when viewing
-    LaunchedEffect(bundleId, showHistory) {
-        if (showHistory) {
-            repository.getTestResultsFlow(bundleId).collect { results ->
-                historyResults.clear()
-                historyResults.addAll(results)
-            }
+    // Collect test result history continuously (not just when viewing)
+    LaunchedEffect(bundleId) {
+        repository.getTestResultsFlow(bundleId).collect { results ->
+            historyResults.clear()
+            historyResults.addAll(results)
         }
     }
 
