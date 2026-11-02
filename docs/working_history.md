@@ -241,3 +241,9 @@ ightarrow$ BuildConfig injection to keep the key out of the source code.
 - **Test history UI**: Added history button in `TestingPhase` (top-right), `HistoryView` shows recent test results with expandable wrong word lists. Results page now has "View History" button.
 - **Font XL/XXL added**: `fontScaleIndex` expanded from 3 to 5 levels (S/M/L/XL/XXL → 1.0x/1.25x/1.5x/1.75x/2.0x). A-/A+ buttons cycle through all 5 levels with updated labels.
 
+## [2026-11-02] Test tab start screen with Start + History flow
+- **TestPhase.Start phase added**: Test tab now opens to a start screen instead of directly to testing.
+- **StartTestScreen composable**: Shows "Start Test" button (PlayArrow icon) + conditional "View Test History" button (History icon). Clean centered layout with info text at bottom.
+- **ResultsPage → Start flow**: "Restart Test" now returns to Start screen (not directly to Testing). Users can choose to start a new test or view history after completion.
+- **Phase cycle**: `Start` → `Testing` → `Results` → `Start` (circular navigation).
+
