@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
@@ -579,7 +580,7 @@ fun TestModeTab(
     bundleId: Long,
     repository: WordRepository
 ) {
-    var phase by remember { mutableStateOf<TestPhase>(TestPhase.Testing) }
+    var phase by remember { mutableStateOf<TestPhase>(TestPhase.Start) }
     var showHistory by remember { mutableStateOf(false) }
     val historyResults = remember { mutableStateListOf<TestResultEntity>() }
     val scope = rememberCoroutineScope()
@@ -598,6 +599,11 @@ fun TestModeTab(
             historyResults = historyResults,
             onBack = { showHistory = false }
         )
+        phase == TestPhase.Start -> StartTestScreen(
+            hasHistory = historyResults.isNotEmpty(),
+            onStartTest = { phase = TestPhase.Testing },
+            onViewHistory = { showHistory = true }
+        )
         phase == TestPhase.Testing -> TestingPhase(
             words = words,
             bundleId = bundleId,
@@ -610,7 +616,7 @@ fun TestModeTab(
             results = testResults,
             onRestart = {
                 testResults.clear()
-                phase = TestPhase.Testing
+                phase = TestPhase.Start
             },
             onShowHistory = { showHistory = true },
             hasHistory = historyResults.isNotEmpty()
@@ -618,7 +624,74 @@ fun TestModeTab(
     }
 }
 
-private enum class TestPhase { Testing, Results }
+private enum class TestPhase { Start, Testing, Results }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StartTestScreen(
+    hasHistory: Boolean,
+    onStartTest: () -> Unit,
+    onViewHistory: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Spacer(modifier = Modifier.height(64.dp))
+
+        // Title
+        Text(
+            "Test Mode",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            "Check your vocabulary knowledge",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Start Test button
+        Button(
+            onClick = onStartTest,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Start Test", style = MaterialTheme.typography.titleLarge)
+        }
+
+        // History button
+        if (hasHistory) {
+            Button(
+                onClick = onViewHistory,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                Icon(Icons.Default.History, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("View Test History", style = MaterialTheme.typography.titleLarge)
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Info text at bottom
+        Text(
+            "Type the English word for each Korean meaning",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
 
 @Composable
 private fun TestingPhase(
