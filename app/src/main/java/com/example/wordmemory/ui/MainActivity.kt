@@ -24,6 +24,7 @@ import com.example.wordmemory.api.GeminiCloudLLMClient
 import com.example.wordmemory.data.local.room.dictionary.DictionaryRepository
 import com.example.wordmemory.parser.CloudLLMMatcher
 import com.example.wordmemory.BuildConfig
+import com.example.wordmemory.util.FontSettings
 
 // Light theme colors
 private val LightColorScheme = lightColorScheme(
@@ -77,6 +78,9 @@ private val DarkColorScheme = darkColorScheme(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Initialize global font settings
+        FontSettings.init(applicationContext)
         
         // Manual Dependency Injection
         val db = Room.databaseBuilder(

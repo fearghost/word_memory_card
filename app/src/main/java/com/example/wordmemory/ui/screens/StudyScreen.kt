@@ -33,6 +33,7 @@ import com.example.wordmemory.data.local.room.TestResultEntity
 import com.example.wordmemory.data.repository.WordRepository
 import com.example.wordmemory.tts.TtsManager
 import java.util.Locale
+import com.example.wordmemory.util.FontSettings
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,7 +45,8 @@ fun StudyScreen(
 ) {
     var isRotated by remember { mutableStateOf(false) }
     var isSwapped by remember { mutableStateOf(false) }
-    var fontScaleIndex by remember { mutableIntStateOf(1) }
+    // Read from global settings; write back on change
+    var fontScaleIndex by remember { mutableIntStateOf(FontSettings.getFontScaleIndex()) }
     val isTtsReady by ttsManager.isReady.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -95,7 +97,10 @@ fun StudyScreen(
             isSwapped = isSwapped,
             onSwapChange = { isSwapped = it },
             fontScaleIndex = fontScaleIndex,
-            onFontScaleChange = { fontScaleIndex = it },
+            onFontScaleChange = { newIndex ->
+                fontScaleIndex = newIndex
+                FontSettings.setFontScaleIndex(newIndex)
+            },
             onSpeak = { word ->
                 scope.launch {
                     ttsManager.speak(word)
@@ -154,7 +159,9 @@ fun ThreeTabStudyScreen(
                 bundleId = bundleId,
                 repository = repository,
                 ttsManager = ttsManager,
-                onSpeak = onSpeak
+                onSpeak = onSpeak,
+                fontScaleIndex = fontScaleIndex,
+                onFontScaleChange = onFontScaleChange
             )
             1 -> StudyModeTab(
                 words = words,
@@ -189,20 +196,58 @@ fun WordListTab(
     bundleId: Long,
     repository: WordRepository,
     ttsManager: TtsManager,
-    onSpeak: (String) -> Unit
+    onSpeak: (String) -> Unit,
+    fontScaleIndex: Int = FontSettings.getFontScaleIndex(),
+    onFontScaleChange: ((Int) -> Unit)? = null
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(words, key = { it.id }) { word ->
-            WordListItem(
-                word = word,
-                bundleId = bundleId,
-                repository = repository,
-                onSpeak = onSpeak
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Font scale controls header
+        if (onFontScaleChange != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "폰트 크기",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { onFontScaleChange((fontScaleIndex - 1).coerceAtLeast(FontSettings.MIN_INDEX)) }) {
+                        Text("A-", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+                    }
+                    Text(
+                        text = FontSettings.getFontLabel(fontScaleIndex),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    IconButton(onClick = { onFontScaleChange((fontScaleIndex + 1).coerceAtMost(FontSettings.MAX_INDEX)) }) {
+                        Text("A+", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+                    }
+                }
+            }
+        }
+
+        val fontMultiplier = FontSettings.getFontScaleMultiplier(fontScaleIndex)
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(words, key = { it.id }) { word ->
+                WordListItem(
+                    word = word,
+                    bundleId = bundleId,
+                    repository = repository,
+                    onSpeak = onSpeak,
+                    fontScaleMultiplier = fontMultiplier
+                )
+            }
         }
     }
 }
@@ -213,7 +258,8 @@ private fun WordListItem(
     word: ParsedWord,
     bundleId: Long,
     repository: WordRepository,
-    onSpeak: (String) -> Unit
+    onSpeak: (String) -> Unit,
+    fontScaleMultiplier: Float = 1.0f
 ) {
     val scope = rememberCoroutineScope()
 
@@ -234,14 +280,16 @@ private fun WordListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
+                val scaledWordSize = MaterialTheme.typography.titleMedium.fontSize * fontScaleMultiplier
                 Text(
                     word.word,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = scaledWordSize),
                     fontWeight = FontWeight.Bold
                 )
+                val scaledMeaningSize = MaterialTheme.typography.bodyMedium.fontSize * fontScaleMultiplier
                 Text(
                     word.meaning,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = scaledMeaningSize),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -323,12 +371,13 @@ fun StudyModeTab(
                         1 -> "M"
                         2 -> "L"
                         3 -> "XL"
-                        else -> "XXL"
+                        4 -> "XXL"
+                        else -> "XXXL"
                     },
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                IconButton(onClick = { onFontScaleChange((fontScaleIndex + 1).coerceAtMost(4)) }) {
+                IconButton(onClick = { onFontScaleChange((fontScaleIndex + 1).coerceAtMost(5)) }) {
                     Text("A+", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
                 }
             }
@@ -389,7 +438,8 @@ fun StudyModeTab(
                     1 -> 1.25f
                     2 -> 1.5f
                     3 -> 1.75f
-                    else -> 2.0f
+                    4 -> 2.0f
+                    else -> 2.5f
                 },
                 onSpeak = onSpeak,
                 wordCount = displayWords.size
