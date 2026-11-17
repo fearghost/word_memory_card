@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
@@ -703,31 +704,55 @@ private fun TestingPhase(
     onPhaseChange: (TestPhase) -> Unit
 ) {
     var currentIndex by remember { mutableIntStateOf(0) }
-    var userInput by remember { mutableStateOf(TextFieldValue("")) }
+    val userAnswers = remember { mutableStateListOf<TextFieldValue>() }
+    val isCorrectList = remember { mutableStateListOf<Boolean>() }
 
-    fun goNext() {
-        val isCorrect = userInput.text.trim().equals(
+    // Initialize answer slots
+    while (userAnswers.size < words.size) userAnswers.add(TextFieldValue(""))
+    while (isCorrectList.size < words.size) isCorrectList.add(false)
+
+    fun saveCurrentAnswer() {
+        val trimmed = userAnswers[currentIndex].text.trim()
+        userAnswers[currentIndex] = TextFieldValue(trimmed)
+        isCorrectList[currentIndex] = trimmed.equals(
             words[currentIndex].word, ignoreCase = true
         )
-        testResults.add(TestResult(words[currentIndex], userInput.text.trim(), isCorrect))
+    }
+
+    fun goNext() {
+        saveCurrentAnswer()
         if (currentIndex < words.size - 1) {
             currentIndex++
-            userInput = TextFieldValue("")
         } else {
-            // Save to DB before switching phase
+            // All answered — save to DB and show results
+            testResults.clear()
+            for (i in words.indices) {
+                testResults.add(TestResult(words[i], userAnswers[i].text.trim(), isCorrectList[i]))
+            }
+            val correctCount = testResults.count { it.isCorrect }
+            val wrongWords = testResults.filter { !it.isCorrect }
+                .map { "${it.word.word}|${it.word.meaning}" }.joinToString(";")
             scope.launch {
-                val correctCount = testResults.count { it.isCorrect }
-                val wrongWords = testResults.filter { !it.isCorrect }.map { "${it.word.word}|${it.word.meaning}" }.joinToString(";")
                 repository.saveTestResult(bundleId, testResults.size, correctCount, wrongWords)
             }
             onPhaseChange(TestPhase.Results)
         }
     }
 
+    fun goPrev() {
+        if (currentIndex > 0) {
+            saveCurrentAnswer()
+            currentIndex--
+        }
+    }
+
     fun restart() {
+        userAnswers.clear()
+        for (i in words.indices) userAnswers.add(TextFieldValue(""))
+        isCorrectList.clear()
+        for (i in words.indices) isCorrectList.add(false)
         testResults.clear()
         currentIndex = 0
-        userInput = TextFieldValue("")
     }
 
     Column(
@@ -783,29 +808,58 @@ private fun TestingPhase(
 
         // Input field
         OutlinedTextField(
-            value = userInput,
-            onValueChange = { userInput = it },
+            value = userAnswers[currentIndex],
+            onValueChange = { userAnswers[currentIndex] = it },
             label = { Text("Type the English word") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
-        // Next/Finish button
-        Button(
-            onClick = ::goNext,
-            enabled = userInput.text.isNotBlank(),
-            modifier = Modifier.fillMaxWidth()
+        // Navigation buttons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (currentIndex < words.size - 1) {
-                Text("Next")
-            } else {
-                Text("Finish")
+            // Previous button (only when not on first question)
+            if (currentIndex > 0) {
+                Button(
+                    onClick = ::goPrev,
+                    modifier = Modifier.weight(1f),
+                    enabled = userAnswers[currentIndex].text.isNotBlank()
+                ) {
+                    Icon(Icons.Default.Replay, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Previous")
+                }
+            }
+
+            // Next/Finish button
+            Button(
+                onClick = ::goNext,
+                enabled = userAnswers[currentIndex].text.isNotBlank(),
+                modifier = if (currentIndex > 0) Modifier.weight(1f) else Modifier.fillMaxWidth()
+            ) {
+                if (currentIndex < words.size - 1) {
+                    Text("Next")
+                } else {
+                    Text("Finish")
+                }
             }
         }
 
-        // Restart button at bottom
-        TextButton(onClick = ::restart) {
-            Text("Start Over")
+        // Spacer to push restart button to bottom
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Restart button — bottom-left, low emphasis
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            TextButton(onClick = ::restart) {
+                Icon(Icons.Default.Replay, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Start Over")
+            }
         }
     }
 }
